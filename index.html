@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ersi Zhao VFX Portfolio</title>
+  <style>
+    :root {
+      --aspect-ratio: 1;
+      --image-height: 600px;
+      --button-color: #de5858;
+      --overlay-bg-color: 0, 0, 0;
+      --overlay-opacity: 0;
+      --image-gap: 0rem;
+      --parallax-factor: 0;
+      --title-font-size: 2rem;
+      --description-font-size: 1rem;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-color: #000;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      margin: 0.5rem 1rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gallery-item {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      height: var(--image-height);
+      aspect-ratio: var(--aspect-ratio) / 1;
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: auto;
+      min-width: 100%;
+      min-height: 100%;
+      transition: transform 0.05s linear;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background-color: rgba(var(--overlay-bg-color), var(--overlay-opacity));
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .overlay h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: var(--title-font-size);
+    }
+
+    .overlay a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--button-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+<!--    <a href="nuke.html">nuke</a>-->
+<!--    <a href="ue5.html">ue5</a>-->
+<!--    <a href="unreal-projects.html">unreal engine projects</a>-->
+<!--    <a href="houdini.html">houdini</a>-->
+<!--    <a href="python_land.html">python_land</a>-->
+    <a href="index.html">recent work</a>
+    <a href="contact.html">contact</a>
+    <a href="imdb.html">imdb</a>
+<!--    <a href="interviews.html">interviews</a>-->
+  </header>
+
+  <main class="gallery" id="gallery"></main>
+
+  <div style="position: fixed; top: 1rem; right: 1rem; background: #222; padding: 1rem; border-radius: 8px; z-index: 2000;">
+    <label for="colorPicker" style="color: white; font-size: 0.9rem;">Button Color:</label>
+    <input type="color" id="colorPicker" value="#ff4d4d">
+    <br /><br />
+    <label for="parallaxSlider" style="color: white; font-size: 0.9rem;">Parallax Intensity:</label>
+    <input type="range" id="parallaxSlider" min="0" max="1" step="0.01" value="0.3">
+  </div>
+
+  <script>
+    fetch('projects.json')
+      .then(response => response.json())
+      .then(data => {
+        const gallery = document.getElementById('gallery');
+        data.forEach((project, index) => {
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+
+          const img = document.createElement('img');
+          img.src = project.image;
+          img.alt = project.title;
+          img.dataset.offset = project.offset || 0;
+
+          const overlay = document.createElement('div');
+          overlay.className = 'overlay';
+          overlay.innerHTML = `
+            <h2>${project.title}</h2>
+            <p style="margin: 0.5rem 0 1rem 0; font-size: var(--description-font-size); color: #ccc;">
+              ${project.description || ''}
+            </p>
+            <a href="${project.youtube}" target="_blank">${project.buttonText}</a>
+          `;
+
+          item.appendChild(img);
+          item.appendChild(overlay);
+          gallery.appendChild(item);
+        });
+      });
+
+    const colorPicker = document.getElementById('colorPicker');
+    colorPicker.addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--button-color', e.target.value);
+    });
+
+    const parallaxSlider = document.getElementById('parallaxSlider');
+    let parallaxFactor = parseFloat(parallaxSlider.value);
+    parallaxSlider.addEventListener('input', (e) => {
+      parallaxFactor = parseFloat(e.target.value);
+    });
+
+    let ticking = false;
+
+    function applyParallax() {
+      const images = document.querySelectorAll('.gallery-item img');
+      const windowHeight = window.innerHeight;
+      images.forEach((img) => {
+        const item = img.closest('.gallery-item');
+        const rect = item.getBoundingClientRect();
+        const center = rect.top + rect.height / 2 - windowHeight / 2;
+        const offset = parseFloat(img.dataset.offset || 0);
+        img.style.transform = `translate(-50%, calc(-50% + ${offset + center * -parallaxFactor}px))`;
+      });
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(applyParallax);
+        ticking = true;
+      }
+    });
+  </script>
+</body>
+</html>
