@@ -7,7 +7,6 @@
   <style>
     :root {
       --aspect-ratio: 1;
-      --image-height: 600px;
       --button-color: #de5858;
       --overlay-bg-color: 0, 0, 0;
       --overlay-opacity: 0;
@@ -15,6 +14,9 @@
       --parallax-factor: 0;
       --title-font-size: 2rem;
       --description-font-size: 1rem;
+      --visible-image-height: 500px;
+      --base-title-size: 2; /* rem */
+      --base-description-size: 1; /* rem */
     }
 
     body {
@@ -52,6 +54,7 @@
       position: relative;
       width: 100vw;
       max-width: 100%;
+      height: var(--visible-image-height);
       overflow: hidden;
     }
     /*.gallery-item {*/
@@ -77,7 +80,10 @@
     /*  pointer-events: none;*/
     /*}*/
     .gallery-item img {
-      position: relative;
+     position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 100%;
       height: auto;
       display: block;
@@ -100,6 +106,9 @@
     .overlay h2 {
       margin: 0 0 0.5rem 0;
       font-size: var(--title-font-size);
+    }
+    .overlay p {
+    font-size: var(--description-font-size);
     }
 
     .overlay a {
@@ -207,6 +216,20 @@
         ticking = true;
       }
     });
+  </script>
+  <script>
+      function updateFontSizes() {
+        const aspect = window.innerWidth / window.innerHeight;
+        const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
+        const baseDesc = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
+        const scale = aspect / 1.7;
+
+        document.documentElement.style.setProperty('--title-font-size', `${baseTitle * scale}rem`);
+        document.documentElement.style.setProperty('--description-font-size', `${baseDesc * scale}rem`);
+      }
+
+      window.addEventListener('resize', updateFontSizes);
+      window.addEventListener('load', updateFontSizes);
   </script>
 </body>
 </html>
