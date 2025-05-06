@@ -48,25 +48,39 @@
       flex-direction: column;
       align-items: center;
     }
-
     .gallery-item {
       position: relative;
       width: 100vw;
       max-width: 100%;
-      height: var(--image-height);
-      aspect-ratio: var(--aspect-ratio) / 1;
       overflow: hidden;
     }
+    /*.gallery-item {*/
+    /*  position: relative;*/
+    /*  width: 100vw;*/
+    /*  max-width: 100%;*/
+    /*  height: var(--image-height);*/
+    /*  aspect-ratio: var(--aspect-ratio) / 1;*/
+    /*  overflow: hidden;*/
+    /*}*/
 
+    /*.gallery-item img {*/
+    /*  position: absolute;*/
+    /*  top: 50%;*/
+    /*  left: 50%;*/
+    /*  transform: translate(-50%, -50%);*/
+    /*  width: 100%;*/
+    /*  height: auto;*/
+    /*  min-width: 100%;*/
+    /*  min-height: 100%;*/
+    /*  transition: transform 0.05s linear;*/
+    /*  will-change: transform;*/
+    /*  pointer-events: none;*/
+    /*}*/
     .gallery-item img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: relative;
       width: 100%;
       height: auto;
-      min-width: 100%;
-      min-height: 100%;
+      display: block;
       transition: transform 0.05s linear;
       will-change: transform;
       pointer-events: none;
@@ -110,7 +124,7 @@
 </head>
 <body>
   <header>
-    <a href="nuke.html">nuke</a>
+<!--    <a href="nuke.html">nuke</a>-->
 <!--    <a href="ue5.html">ue5</a>-->
 <!--    <a href="unreal-projects.html">unreal engine projects</a>-->
 <!--    <a href="houdini.html">houdini</a>-->
