@@ -15,6 +15,7 @@
       --title-font-size: 2rem;
       --description-font-size: 1rem;
       --visible-image-height: 500px;
+      --base-visible-height: 700;
       --base-title-size: 2; /* rem */
       --base-description-size: 1; /* rem */
     }
@@ -57,6 +58,7 @@
       height: var(--visible-image-height);
       overflow: hidden;
     }
+
     /*.gallery-item {*/
     /*  position: relative;*/
     /*  width: 100vw;*/
@@ -231,5 +233,25 @@
       window.addEventListener('resize', updateFontSizes);
       window.addEventListener('load', updateFontSizes);
   </script>
+    <script>
+      function updateLayoutSizes() {
+        const aspect = window.innerWidth / window.innerHeight;
+
+        // Font scaling (already working)
+        const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
+        const baseDesc = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
+        const fontScale = aspect / 1.7;
+        document.documentElement.style.setProperty('--title-font-size', `${baseTitle * fontScale}rem`);
+        document.documentElement.style.setProperty('--description-font-size', `${baseDesc * fontScale}rem`);
+
+        // Image mask height scaling
+        const baseVisibleHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-visible-height'));; // base visible-image-height in px
+        const heightScale = aspect / 1.7;
+        document.documentElement.style.setProperty('--visible-image-height', `${baseVisibleHeight * heightScale}px`);
+      }
+
+      window.addEventListener('resize', updateLayoutSizes);
+      window.addEventListener('load', updateLayoutSizes);
+    </script>
 </body>
 </html>
