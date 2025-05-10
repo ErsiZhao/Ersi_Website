@@ -1,3 +1,5 @@
+Here is a bit outdated, I will update website as much as I could and only list some of the fun ones. Most of past projects are on IMDB,  Let me know if you want to collab with Machine learning projects as well.
+
 <!DOCTYPE html>
 <html lang="en">
 <!--This starts the HTML document and sets the language to English.-->
@@ -46,7 +48,7 @@
       color: white;
       text-decoration: none;
       margin: 0.5rem 1rem;
-      font-size: 2rem;
+      /*font-size: 15rem;*/
       text-transform: uppercase;
     }
      /*Styles each individual link in the header (e.g. "contact", "imdb").*/
@@ -120,6 +122,24 @@
 
 
 
+    #welcome-mask {
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      z-index: 9999;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: all;
+      transition: opacity 1s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
+      display:block;
+    }
 
     /* ✅ Responsive tweak for vertical screens (phones) */
     /*If the screen is taller than it is wide (like a phone), it adjusts aspect ratio and font sizes.*/
@@ -140,8 +160,26 @@
 
 
 
-
 <body>
+   <div id="welcome-mask">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <mask id="text-mask" x="0" y="0" width="100%" height="100%">
+          <rect width="100%" height="100%" fill="white"/>
+          <text x="50%" y="45%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">
+            "After diving into quantum mechanics and machine learning,
+          </text>
+          <text x="50%" y="50%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">
+            I’ve come to realize: even with all our progress,
+          </text>
+          <text x="50%" y="55%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">
+            existence still feels like a black box. We drift with the current—just passing through with time."
+          </text>
+        </mask>
+      </defs>
+      <rect width="100%" height="100%" fill="white" mask="url(#text-mask)"/>
+    </svg>
+  </div>
   <header>
 <!--    <a href="nuke.html">nuke</a>-->
 <!--    <a href="ue5.html">ue5</a>-->
@@ -161,7 +199,7 @@
       position: fixed;
       top: 3rem;
       left: 3rem;
-      font-size: 10rem;
+      font-size: 8rem;
       color: #3473d3;
       cursor: pointer;
       z-index: 2000;
@@ -176,12 +214,12 @@
       position: fixed;
       top: 15rem;                    /* moved down to clear big ✚ icon */
       left: 1rem;                   /* aligned with ✚ icon */
-      background: rgba(0, 0, 0, 0.08);
+      background: rgba(52,115,211,0.87);
       padding: 2rem;
       border-radius: 20px;
       z-index: 1999;
-      font-size: 5rem !important;            /* 🔁 larger font */
-      line-height: 2rem;          /* 🔁 more vertical spacing */
+      font-size: 4rem !important;            /* this is controlled and overwritten by  */
+      line-height: 6rem;          /* 🔁 more vertical spacing */
       /*width: 90vw;*/
       /*max-width: 600px;*/
     ">
@@ -340,6 +378,19 @@
       toggle.textContent = isVisible ? '✚' : '✕'; // change icon
     });
   </script>
+
+
+
+  <script>
+    const welcome = document.getElementById('welcome-mask');
+    welcome.addEventListener('click', () => {
+      welcome.style.opacity = '0';
+      welcome.style.pointerEvents = 'none';
+      setTimeout(() => welcome.remove(), 1000);
+    });
+  </script>
+
+
 
 </body>
 
