@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact - Ersi Zhao</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('images/contact_page/Screen+Shot+2018-03-11+at+11.07.02+AM.png') center center / cover no-repeat fixed;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-color: #000;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      margin: 0.5rem 1rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .content {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 800px;
+      margin: 5vh auto;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 3rem;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      margin-top: 2rem;
+      font-size: 1.8rem;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+<!--    <a href="nuke.html">nuke</a>-->
+<!--    <a href="ue5.html">ue5</a>-->
+<!--    <a href="unreal-projects.html">unreal engine projects</a>-->
+<!--    <a href="houdini.html">houdini</a>-->
+<!--    <a href="python_land.html">python_land</a>-->
+    <a href="index.html">recent work</a>
+    <a href="contact.html">contact</a>
+    <a href="imdb.html">imdb</a>
+<!--    <a href="interviews.html">interviews</a>-->
+  </header>
+
+  <div class="content">
+    <h1>unreal vfx pipeline</h1>
+    <p>developed tool rt_hub which allow unreal access to deadline render farm and SG</p>
+
+
+
+    <p class="section-title">Key functions</p>
+    <p>
+        1. local Render/deadline Automation<br>
+        -fully integrate into ingenuity studio render pipeline structure<br>
+        -supports integration with DeadlineService for distributed rendering along with perforce integration.<br>
+        -light selects render passes automation <br>
+        -ndisplay render passes automation (rendering with nDisplay-specific settings).<br>
+
+        2. Plugin Management<br>
+        Contains a script like rt_plugin.py that:<br>
+        Detects and updates installed plugins.<br>
+
+        Sends a notification popup showing which plugins were updated.<br>
+
+        3. ShotGrid Integration<br>
+        -Includes tools like download_from_SG.py and ShotGrid API logic. this allow user fully sync your shots with SG<br>
+
+        -Handles authentication, token management, and asset syncing between ShotGrid and Unreal.<br>
+
+        -Might be used to automate asset pulls for project folders (e.g., grasslands_001).<br>
+
+        4. Perforce Integration<br>
+        Includes logic to check whether files are checked out or writable.<br>
+
+        Possibly sets up folder structures and links assets to Perforce workspaces.<br>
+
+        5. Configuration Management<br>
+        Centralized logic via:<br>
+
+        RtInfos (project paths, content directory)<br>
+
+        RenderSetting (resolution, aliasing, object ID types)<br>
+        Makes your render or asset jobs environment-independent and project-aware.</p>
+</body>
+</html>
