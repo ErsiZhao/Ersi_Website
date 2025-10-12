@@ -1,4 +1,4 @@
-Here is a bit outdated, I will update website as much as I could and only list some of the fun ones. Most of past projects are on IMDB,  Let me know if you want to collab with Machine learning projects as well.
+Here is a bit outdated, I'm starting to update website right now. some pages might be missing,Most of past projects are on IMDB,  Let me know if you want to collab with Machine learning projects as well.
 
 <!DOCTYPE html>
 <html lang="en">
@@ -151,6 +151,49 @@ Here is a bit outdated, I will update website as much as I could and only list s
             --description-font-size: 1.2rem;
         }
     }
+    /* ML submenu is hidden by default */
+
+
+    /* Show submenu when hovering over the whole group (parent + submenu area) */
+    .ml-group:hover .ml-submenu { display: block; }
+
+    /* optional: nicer submenu text */
+    .ml-submenu a { text-transform: none; font-size: 2.4rem; line-height: 1.6; }
+    /* Optional: nicer summary styling + caret */
+
+    details.ml { margin-top: 0.5rem; }
+    details.ml > summary {
+      list-style: none;
+      cursor: pointer;
+      color: white;
+      text-decoration: none;
+      display: block;
+      user-select: none;
+    }
+    /* custom caret */
+    details.ml > summary::after {
+      content: " ▸";
+      font-weight: 600;
+    }
+    details.ml[open] > summary::after {
+      content: " ▾";
+    }
+
+    /* submenu look */
+    .ml-submenu {
+      margin: 0.5rem 0 0 1.5rem;
+      border-left: 2px solid rgba(255,255,255,0.15);
+      padding-left: 1rem;
+    }
+    .ml-submenu a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      line-height: 1.6;
+      font-size: 2.4rem;   /* match your menu size */
+      margin: 0.3rem 0;
+      text-transform: none;
+    }
 
   </style>
 </head>
@@ -234,10 +277,38 @@ Here is a bit outdated, I will update website as much as I could and only list s
       /*max-width: 600px;*/
     ">
       <a href="index.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">vfx work</a>
-      <a href="pipeline.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">pipeline TD</a>
-      <a href="contact.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">About</a>
+      <a href="pipeline.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">UE pipeline TD</a>
+      <a href="contact.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">About me</a>
       <a href="imdb.html" style="display: block; color: white; text-decoration: none;">IMDb</a>
+
       <a href="thoughts.html" style="display: block; color: white; text-decoration: none;">Other</a>
+      <a href="https://www.notion.so/17e41d523d4248988286574c9fb88dd6?v=78762a13f5e54b998f7b0faa5cf9a02f"
+         target="_blank" rel="noopener noreferrer"
+         style="display: block; color: white; text-decoration: none;">
+         nuke
+      </a>
+<!--      <div class="ml-group">-->
+<!--  &lt;!&ndash; Parent &ndash;&gt;-->
+<!--        <a id="ml-toggle" href="#" class="ml-parent" style="display:block;color:white;text-decoration:none;">-->
+<!--          Machine learning ▸-->
+<!--        </a>-->
+
+<!--        &lt;!&ndash; Submenu &ndash;&gt;-->
+<!--        <div id="ml-submenu" class="ml-submenu" style=" margin:0.5rem 0 0 1.5rem; border-left:2px solid rgba(255,255,255,0.15); padding-left:1rem;">-->
+<!--          <a href="ml-comfyui.html" style="display:block;color:white;text-decoration:none;margin-bottom:0.75rem;">ComfyUI</a>-->
+<!--          <a href="ml-nuke-tool.html" style="display:block;color:white;text-decoration:none;margin-bottom:0.75rem;">Nuke Tool</a>-->
+<!--          <a href="ml-training.html" style="display:block;color:white;text-decoration:none;">Training Options</a>-->
+<!--        </div>-->
+<!--      </div>-->
+      <!-- Machine learning submenu (click to open/close) -->
+      <details class="ml">
+        <summary>Machine learning</summary>
+        <div class="ml-submenu">
+          <a href="ml-comfyui.html">ComfyUI(coming)</a>
+          <a href="ml-nuke-tool.html">Nuke Tool</a>
+          <a href="ml-training.html">Training Options</a>
+        </div> <!-- ← close the inner DIV first -->
+      </details> <!-- ← then close DETAILS -->
 
     </nav>
 
@@ -402,6 +473,7 @@ Here is a bit outdated, I will update website as much as I could and only list s
       setTimeout(() => welcome.remove(), 1000);
     });
   </script>
+
 
 
 

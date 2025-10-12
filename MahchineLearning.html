@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ComfyUI Diagram (Zoomable)</title>
+
+  <!-- diagrams.net viewer -->
+  <script src="https://viewer.diagrams.net/js/viewer-static.min.js"></script>
+
+  <style>
+    body { margin:0; background:#111; color:#ddd; font-family:system-ui, Arial, sans-serif; }
+    header { padding:16px 20px; font-weight:600; letter-spacing:.02em; }
+    .wrap { position:relative; width:100%; max-width:1400px; margin:0 auto; }
+    .wrap::before { content:""; display:block; padding-top:56.25%; } /* 16:9; adjust if you want */
+    .mxgraph { position:absolute; inset:0; height:100%; border:1px solid #333; }
+  </style>
+</head>
+<body>
+
+  <header>ComfyUI Diagram (Zoomable)</header>
+
+  <div class="wrap">
+    <!-- The viewer fetches your local SVG and adds zoom/pan/layers UI -->
+    <div class="mxgraph"
+         data-mxgraph='{
+           "nav": true,
+           "resize": true,
+           "toolbar": "zoom layers",      // shows zoom controls + layers panel
+           "highlight": "#00bfff",
+           "edit": "_blank",               // optional: pencil opens editor in new tab
+           "url": "assets/svg/comfyui.drawio.svg"
+         }'></div>
+  </div>
+
+</body>
+</html>
