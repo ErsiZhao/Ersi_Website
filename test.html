@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Test Page</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #4ec9b0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #3473d3;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2458a8;
+    }
+
+    #message {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Web Server Test Page</h1>
+  <p>If you can see this page, your local web server is working.</p>
+
+  <button onclick="showMessage()">Click me</button>
+
+  <div id="message"></div>
+
+  <script>
+    function showMessage() {
+      document.getElementById("message").textContent =
+        "JavaScript is working ✔ (" + new Date().toLocaleTimeString() + ")";
+    }
+  </script>
+
+</body>
+</html>
