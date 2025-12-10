@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Video Test</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+    }
+
+    /* ===== Welcome Video Overlay ===== */
+    #welcome-video {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: opacity 1s ease;
+    }
+
+    #welcome-video video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ===== Main Page (Hidden initially) ===== */
+    #main-content {
+      opacity: 0;
+      transition: opacity 1s ease;
+      padding: 3rem;
+      text-align: center;
+    }
+
+    #skip {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== Welcome Video Screen ===== -->
+  <div id="welcome-video">
+    <video id="introVid" autoplay playsinline muted>
+      <source src="videos/presentation_reel.mp4" type="video/mp4">
+      Your browser does not support videos.
+    </video>
+
+    <button id="skip">Skip</button>
+  </div>
+
+  <!-- ===== Main Website Content ===== -->
+  <div id="main-content">
+    <h1>Welcome to Ersi Zhao VFX</h1>
+    <p>This is the main content of your website.</p>
+    <p>You can now place your real gallery, navigation menu, pipeline page, etc.</p>
+  </div>
+
+  <script>
+    const welcome = document.getElementById("welcome-video");
+    const main = document.getElementById("main-content");
+    const video = document.getElementById("introVid");
+    const skip = document.getElementById("skip");
+
+    // Fade out function
+    function hideWelcome() {
+      welcome.style.opacity = "0";
+      setTimeout(() => {
+        welcome.style.display = "none";
+        main.style.opacity = "1";
+      }, 1000);
+    }
+
+    // When video finishes → hide welcome
+    video.addEventListener("ended", hideWelcome);
+
+    // Skip manually
+    skip.addEventListener("click", hideWelcome);
+  </script>
+
+</body>
+</html>
