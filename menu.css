@@ -17,7 +17,7 @@
 
   top: 15rem;     /* below ✚ */
   left: 1rem;
-  bottom: 1rem;   /* ✅ auto-scroll whenever window is shorter than menu */
+
 
   width: min(600px, 90vw);
   background: rgba(0,0,0,0.85);
@@ -52,7 +52,9 @@ details.ml > summary{
   list-style: none;
   cursor: pointer;
   color: white;
-  padding: 1rem 0;
+  margin-bottom: 1rem;     /* ✅ same as #dropdown-menu a */
+  line-height: 3rem;       /* ✅ same rhythm as menu */
+
   user-select: none;
 }
 details.ml > summary::after{ content:" ▸"; font-weight: 200; }

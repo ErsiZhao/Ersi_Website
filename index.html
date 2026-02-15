@@ -10,6 +10,7 @@
 <!--  //Defines how characters are encoded (UTF-8 supports most characters from all languages).-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ersi Zhao VFX/ML</title>
+   <link rel="stylesheet" href="menu.css">
 <!--  //CSS Variables are defined here (like &#45;&#45;button-color, &#45;&#45;aspect-ratio, etc.) and can be reused in other styles.-->
   <style>
     :root {
@@ -163,6 +164,7 @@
     /*!* Optional: nicer summary styling + caret *!*/
 
     /*!* add in drop down menu for machine learning part *!*/
+
     details.ml { margin-top: 0rem; }
     details.ml > summary {
       list-style: none;
@@ -170,10 +172,11 @@
       color: white;
       text-decoration: none;
       display: block;
-      padding:1rem;
+      padding:0rem;
       user-select: none;
       line-height: 1.6rem;
     }
+
     /* custom caret */
     details.ml > summary::after {
       content: " ▸";
@@ -250,64 +253,9 @@
 
 <body>
 
-    <!-- Navigation / Header -->
-  <header>
-    <!-- ✅ DROPDOWN MENU TRIGGER -->
-    <!--    /* blue cross look control */-->
-    <div id="menu-toggle" style="
-      position: fixed;
-      top: 3rem;
-      left: 3rem;
-      font-size: 8rem;
-      color: #3473d3;
-      cursor: pointer;
-      z-index: 2000;
-    ">
-      ✚
-    </div>
-    <!-- ✅ DROPDOWN MENU LINKS (HIDDEN INITIALLY) -->
-    <!-- ✅ BIGGER DROPDOWN MENU -->
-    <nav id="dropdown-menu" style="
-      display: none;
-      position: fixed;
-      top: 15rem;                    /* moved down to clear big ✚ icon */
-      left: 1rem;                   /* aligned with ✚ icon */
-      background: rgba(0,0,0,0.85);
-      padding: 2rem;
-      border-radius: 20px;
-      z-index: 1999;
-      font-size: 2rem !important;            /* this is controlled and overwritten by  */
-      line-height: 3rem;          /* 🔁 more vertical spacing */
-      /*width: 90vw;*/
-      /*max-width: 600px;*/
-    ">
-        <a href="index.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">vfx work</a>
-        <a href="pipeline.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">UE pipeline</a>
-<!--        <a href="imdb.html" style="display: block; color: white; text-decoration: none;">IMDb</a>-->
-        <a href="https://www.imdb.com/name/nm6027003/?ref_=nv_sr_srsg_0_tt_2_nm_6_in_0_q_Ethan%2520zhao" target="_blank" rel="noopener noreferrer">imdb</a>
-        <a href="contact.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">About me</a>
-        <a href="concept.html" style="display: block; margin-bottom: 1rem; color: white; text-decoration: none;">creative design(coming)</a>
-        <a href="https://www.notion.so/17e41d523d4248988286574c9fb88dd6?v=78762a13f5e54b998f7b0faa5cf9a02f"
-         target="_blank" rel="noopener noreferrer"
-         style="display: block; color: white; text-decoration: none;">
-         nuke(coming)</a>
 
-      <!-- ← we add in machine learning drop down menu -->
-      <details class="ml">
-        <summary>Machine learning(coming)</summary>
-        <div class="ml-submenu">
-            <a href="ml-comfyui.html">ComfyUI(coming)</a>
-            <a href="ml-nuke-tool.html">Nuke ML Tool(coming)</a>
-            <a href="ml-training.html">Model Training(coming) </a>
-        </div> <!-- ← close the inner DIV first -->
-      </details> <!-- ← then close DETAILS -->
-      <!-- Machine learning submenu (click to open/close)  end -->
-
-
-      <a href="thoughts.html" style="display: block; color: white; text-decoration: none;">Other</a>
-    </nav>
-  </header>
-
+    <div id="menu-host"></div>
+  <script src="menu.js"></script>
 
 
 
