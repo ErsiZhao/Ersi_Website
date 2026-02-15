@@ -1,7 +1,7 @@
 /* menu.css */
 
 #menu-toggle{
-  position: fixed;
+
   top: 3rem;
   left: 3rem;
   font-size: 8rem;
@@ -13,7 +13,6 @@
 
 #dropdown-menu{
   display: none;
-  position: fixed;
 
   top: 15rem;     /* below ✚ */
   left: 1rem;
