@@ -204,7 +204,7 @@
 
     /* Make the dropdown menu scrollable on small screens */
     #dropdown-menu {
-      max-height: calc(50dvh - 6rem);     /* leave space for the ✚ and notch */
+      max-height: calc(100dvh - 6rem);     /* leave space for the ✚ and notch */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;    /* smooth iOS scrolling */
     }
@@ -225,7 +225,6 @@
                  max(1rem, env(safe-area-inset-right, 0));
         border-radius: 0;                   /* sheet style */
         overflow-y: auto;
-        pointer-events: auto;
       }
     }
 
@@ -327,7 +326,22 @@
          style="display: block; color: white; text-decoration: none;">
          nuke(coming)</a>
 
-      <!-- ← we add in machine learning drop down menu -->
+
+<!--      <div class="ml-group">-->
+<!--  &lt;!&ndash; Parent &ndash;&gt;-->
+<!--        <a id="ml-toggle" href="#" class="ml-parent" style="display:block;color:white;text-decoration:none;">-->
+<!--          Machine learning ▸-->
+<!--        </a>-->
+
+<!--        &lt;!&ndash; Submenu &ndash;&gt;-->
+<!--        <div id="ml-submenu" class="ml-submenu" style=" margin:0.5rem 0 0 1.5rem; border-left:2px solid rgba(255,255,255,0.15); padding-left:1rem;">-->
+<!--          <a href="ml-comfyui.html" style="display:block;color:white;text-decoration:none;margin-bottom:0.75rem;">ComfyUI</a>-->
+<!--          <a href="ml-nuke-tool.html" style="display:block;color:white;text-decoration:none;margin-bottom:0.75rem;">Nuke Tool</a>-->
+<!--          <a href="ml-training.html" style="display:block;color:white;text-decoration:none;">Training Options</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <!-- Machine learning submenu (click to open/close) start -->
       <details class="ml">
         <summary>Machine learning(coming)</summary>
         <div class="ml-submenu">
