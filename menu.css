@@ -1,0 +1,89 @@
+/* menu.css */
+
+#menu-toggle{
+  position: fixed;
+  top: 3rem;
+  left: 3rem;
+  font-size: 8rem;
+  color: #3473d3;
+  cursor: pointer;
+  z-index: 2000;
+  user-select: none;
+}
+
+#dropdown-menu{
+  display: none;
+  position: fixed;
+
+  top: 15rem;     /* below ✚ */
+  left: 1rem;
+  bottom: 1rem;   /* ✅ auto-scroll whenever window is shorter than menu */
+
+  width: min(600px, 90vw);
+  background: rgba(0,0,0,0.85);
+  padding: 2rem;
+  border-radius: 20px;
+  z-index: 1999;
+
+  font-size: 2rem;
+  line-height: 3rem;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* hide scrollbar but keep scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#dropdown-menu::-webkit-scrollbar{ display:none; }
+
+#dropdown-menu a{
+
+  display:block;
+  margin-bottom: 1rem;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+/* ML submenu */
+details.ml > summary{
+  list-style: none;
+  cursor: pointer;
+  color: white;
+  padding: 1rem 0;
+  user-select: none;
+}
+details.ml > summary::after{ content:" ▸"; font-weight: 200; }
+details.ml[open] > summary::after{ content:" ▾"; }
+
+.ml-submenu{
+  margin: 0.5rem 0 0 1.5rem;
+  border-left: 2px solid rgba(255,255,255,0.15);
+  padding-left: 1rem;
+}
+.ml-submenu a{
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  font-size: 1.8rem;
+}
+
+/* Mobile sheet */
+@media (max-width: 640px){
+  #dropdown-menu{
+    top: env(safe-area-inset-top, 0);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    border-radius: 0;
+    padding: max(1rem, env(safe-area-inset-left, 0))
+             1.25rem
+             max(1rem, env(safe-area-inset-bottom, 0))
+             max(1rem, env(safe-area-inset-right, 0));
+  }
+}
+
+/* lock page scroll behind menu */
+html.menu-open, body.menu-open{ overflow: hidden; }

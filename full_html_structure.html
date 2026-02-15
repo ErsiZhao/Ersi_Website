@@ -1,0 +1,59 @@
+html — The root of the entire webpage. Everything lives inside this tag.
+│
+├── head — The invisible configuration area of the page (browser & SEO settings).
+│   │
+│   ├── meta — Metadata that tells the browser how to interpret the page
+│   │            (character encoding, viewport scaling, SEO description, etc.).
+│   │
+│   ├── title — The text shown in the browser tab and used by search engines.
+│   │
+│   ├── link — Connects external resources like CSS files, fonts, icons.
+│   │
+│   └── style — Internal CSS used to style the page directly inside the file.
+│
+└── body — Everything visible to the user lives here.
+    │
+    ├── header — The top section of the page, usually contains branding and navigation.
+    │   │
+    │   └── nav — Navigation container that groups menu links.
+    │       │
+    │       └── a — Anchor links (clickable navigation items).
+    │
+    ├── main — The primary content area of the page (the main purpose of the page).
+    │   │
+    │   ├── section — A logical grouping of related content.
+    │   │   │
+    │   │   ├── h1 — Main heading of that section (highest importance for SEO).
+    │   │   │
+    │   │   └── p — Paragraph text providing content under the heading.
+    │   │
+    │   └── section.gallery — A specific section designed to hold image-based projects.
+    │       │
+    │       └── div.gallery-item — Container for one project item.
+    │           │
+    │           ├── img — The visual media element (project thumbnail or artwork).
+    │           │
+    │           └── div.overlay — Text layer positioned on top of the image.
+    │               │
+    │               ├── h2 — Title of the specific project.
+    │               │
+    │               ├── p — Short description explaining the project.
+    │               │
+    │               └── a — Button or link (e.g., YouTube, detail page, external site).
+    │
+    ├── footer — Bottom section of the page (copyright, secondary links, legal info).
+    │   │
+    │   └── p — Footer text content.
+    │
+    └── script — JavaScript logic that controls interaction, animation, or dynamic behavior.
+
+
+
+containers
+html
+ └── body
+      ├── div     general container
+      ├── nav    navigation container
+      ├── section
+      ├── header
+      └── footer

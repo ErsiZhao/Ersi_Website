@@ -2,11 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--This starts the HTML document and sets the language to English.-->
+<!-- =========================
+       1️⃣ HEAD (Page Metadata)
+  ========================== -->
 <head>
   <meta charset="UTF-8" />
 <!--  //Defines how characters are encoded (UTF-8 supports most characters from all languages).-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ersi Zhao VFX</title>
+  <title>Ersi Zhao VFX/ML</title>
 <!--  //CSS Variables are defined here (like &#45;&#45;button-color, &#45;&#45;aspect-ratio, etc.) and can be reused in other styles.-->
   <style>
     :root {
@@ -48,7 +51,6 @@
       text-decoration: none;
       margin: 0.5rem 1rem;
       /*font-size: 15rem;*/
-      text-transform: uppercase;
     }
      /*Styles each individual link in the header (e.g. "contact", "imdb").*/
 
@@ -204,9 +206,14 @@
 
     /* Make the dropdown menu scrollable on small screens */
     #dropdown-menu {
-      max-height: calc(50dvh - 6rem);     /* leave space for the ✚ and notch */
+      position:fixed;
+      max-height: calc(70dvh - 6rem);     /* leave space for the ✚ and notch */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;    /* smooth iOS scrolling */
+      overscroll-behavior: contain; /* stops scroll “leaking” to page */
+      -ms-overflow-style: none;/* Hide scrollbar — IE / old Edge */
+      scrollbar-width: none; /* Hide scrollbar — Firefox */
+      display: none; /* Hide scrollbar — Chrome / Safari */
     }
 
     /* Optional: go full-screen sheet on very small widths */
@@ -231,61 +238,20 @@
 
     /* (Optional) keep the page from scrolling behind the open menu */
     html.menu-open, body.menu-open { overflow: hidden; }
-
-
-
   </style>
 </head>
 
 
 
 
-
+  <!-- =========================
+       2️⃣ BODY (Visible Content)
+  ========================== -->
 
 <body>
 
-
-
-<!--   <div id="welcome-mask">-->
-<!--    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">-->
-<!--      <defs>-->
-<!--        <mask id="text-mask" x="0" y="0" width="100%" height="100%">-->
-<!--          <rect width="100%" height="100%" fill="white"/>-->
-<!--          <text x="50%" y="45%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">-->
-<!--            "After diving into quantum mechanics and machine learning,-->
-<!--          </text>-->
-<!--          <text x="50%" y="50%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">-->
-<!--            I’ve come to realize: even with all our progress,-->
-<!--          </text>-->
-<!--          <text x="50%" y="55%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">-->
-<!--            existence still feels like a black box."-->
-<!--          </text>-->
-<!--          <text x="50%" y="60%" text-anchor="middle" font-size="20" fill="black" font-family="Arial" font-weight="bold">-->
-<!--          We drift with the current, just passing through with time. "-->
-<!--          </text>-->
-<!--        </mask>-->
-<!--      </defs>-->
-<!--      <rect width="100%" height="100%" fill="white" mask="url(#text-mask)"/>-->
-<!--    </svg>-->
-<!--  </div>-->
-
-
-
-
+    <!-- Navigation / Header -->
   <header>
-<!--    <a href="nuke.html">nuke</a>-->
-<!--    <a href="ue5.html">ue5</a>-->
-<!--    <a href="unreal-projects.html">unreal engine projects</a>-->
-<!--    <a href="houdini.html">houdini</a>-->
-<!--    <a href="python_land.html">python_land</a>-->
-<!--    <a href="index.html">recent work</a>-->
-<!--    <a href="contact.html">contact</a>-->
-<!--    <a href="imdb.html">imdb</a>-->
-<!--    <a href="interviews.html">interviews</a>-->
-
-
-
-
     <!-- ✅ DROPDOWN MENU TRIGGER -->
     <!--    /* blue cross look control */-->
     <div id="menu-toggle" style="
@@ -299,7 +265,6 @@
     ">
       ✚
     </div>
-
     <!-- ✅ DROPDOWN MENU LINKS (HIDDEN INITIALLY) -->
     <!-- ✅ BIGGER DROPDOWN MENU -->
     <nav id="dropdown-menu" style="
@@ -341,13 +306,21 @@
 
       <a href="thoughts.html" style="display: block; color: white; text-decoration: none;">Other</a>
     </nav>
-
-
   </header>
 
+
+
+
+    <!-- Main Content Area -->
   <main class="gallery" id="gallery"></main> <!--id="gallery", This gives the element a unique name in the HTML document.-->
 
 
+
+
+
+
+
+    <!-- External JavaScript -->
   <script>
     fetch('projects.json')
       .then(response => response.json())// Convert the response into usable JSON data (turns text into an object/array in JavaScript).
