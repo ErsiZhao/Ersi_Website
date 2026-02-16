@@ -48,7 +48,8 @@
 }
 
 /* ML submenu */
-details.ml > summary{
+details.ml > summary,
+details.ue > summary{
   list-style: none;
   cursor: pointer;
   color: white;
@@ -57,15 +58,22 @@ details.ml > summary{
 
   user-select: none;
 }
-details.ml > summary::after{ content:" ▸"; font-weight: 200; }
-details.ml[open] > summary::after{ content:" ▾"; }
+details.ml > summary::after,
+details.ue > summary::after{
+ content:" ▸"; font-weight: 200;
+ }
 
-.ml-submenu{
+details.ml[open] > summary::after,
+details.ue[open] > summary::after{ content:" ▾"; }
+
+.ml-submenu,
+.ue-submenu{
   margin: 0.5rem 0 0 1.5rem;
   border-left: 2px solid rgba(255,255,255,0.15);
   padding-left: 1rem;
 }
-.ml-submenu a{
+.ml-submenu a,
+.ue-submenu a{
   margin-bottom: 0.75rem;
   line-height: 1.6;
   font-size: 1.8rem;

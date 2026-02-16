@@ -143,6 +143,7 @@
       display:block;
     }
 
+
     /* ✅ Responsive tweak for vertical screens (phones) */
     /*If the screen is taller than it is wide (like a phone), it adjusts aspect ratio and font sizes.*/
     @media (max-aspect-ratio: 3/4) {
@@ -153,97 +154,11 @@
             --description-font-size: 1.2rem;
         }
     }
-    /* ML submenu is hidden by default */
-
-
-    /*!* Show submenu when hovering over the whole group (parent + submenu area) *!*/
-    /*.ml-group:hover .ml-submenu { display: block; }*/
-
-    /*!* optional: nicer submenu text *!*/
-    /*.ml-submenu a { text-transform: none; font-size: 2.4rem; line-height: 1.6; }*/
-    /*!* Optional: nicer summary styling + caret *!*/
-
-    /*!* add in drop down menu for machine learning part *!*/
-
-    details.ml { margin-top: 0rem; }
-    details.ml > summary {
-      list-style: none;
-      cursor: pointer;
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding:0rem;
-      user-select: none;
-      line-height: 1.6rem;
-    }
-
-    /* custom caret */
-    details.ml > summary::after {
-      content: " ▸";
-      font-weight: 200;
-    }
-    details.ml[open] > summary::after {
-      content: " ▾";
-    }
-
-    /* submenu look */
-    .ml-submenu {
-      margin: 0.5rem 0 0 1.5rem;
-      border-left: 2px solid rgba(255,255,255,0.15);
-      padding-left: 1rem;
-    }
-    .ml-submenu a {
-      display: block;
-      color: white;
-      text-decoration: none;
-      line-height: 1.6;
-      font-size: 1.8rem;   /* match your menu size */
-      margin: 0.3rem 0;
-      text-transform: none;
-    }
-    /*!* add in drop down menu for machine learning part end *!*/
-
-
-
-
-
-    /* Make the dropdown menu scrollable on small screens */
-    #dropdown-menu {
-      position:fixed;
-      max-height: calc(70dvh - 6rem);     /* leave space for the ✚ and notch */
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;    /* smooth iOS scrolling */
-      overscroll-behavior: contain; /* stops scroll “leaking” to page */
-      -ms-overflow-style: none;/* Hide scrollbar — IE / old Edge */
-      scrollbar-width: none; /* Hide scrollbar — Firefox */
-      display: none; /* Hide scrollbar — Chrome / Safari */
-    }
-
-    /* Optional: go full-screen sheet on very small widths */
-    @media (max-width: 640px) {
-      #dropdown-menu {
-        top: env(safe-area-inset-top, 0);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100vw;
-        height: auto;
-        max-height: calc(100dvh - 2rem);
-        padding: max(1rem, env(safe-area-inset-left, 0))
-                 1.25rem
-                 max(1rem, env(safe-area-inset-bottom, 0))
-                 max(1rem, env(safe-area-inset-right, 0));
-        border-radius: 0;                   /* sheet style */
-        overflow-y: auto;
-        pointer-events: auto;
-      }
-    }
 
     /* (Optional) keep the page from scrolling behind the open menu */
     html.menu-open, body.menu-open { overflow: hidden; }
   </style>
 </head>
-
 
 
 
@@ -254,10 +169,8 @@
 <body>
 
 
-    <div id="menu-host"></div>
+  <div id="menu-host"></div>
   <script src="menu.js"></script>
-
-
 
     <!-- Main Content Area -->
   <main class="gallery" id="gallery"></main> <!--id="gallery", This gives the element a unique name in the HTML document.-->
@@ -377,6 +290,9 @@
       window.addEventListener('resize', updateFontSizes);
       window.addEventListener('load', updateFontSizes);
   </script>
+
+
+
 
 
 
