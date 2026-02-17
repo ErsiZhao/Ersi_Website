@@ -151,9 +151,9 @@
 
 
 
-      /* =========================
-   Floating Banner start
-   ========================= */
+/* =========================
+Floating Banner start
+========================= */
 
 .float-banner {
   position: fixed;
@@ -229,9 +229,9 @@
   .float-banner__link { grid-area: link; }
   .float-banner__close { grid-area: close; }
 }
-      /* =========================
-   Floating Banner end
-   ========================= */
+/* =========================
+Floating Banner end
+========================= */
   </style>
 </head>
 
@@ -246,10 +246,9 @@
   <div class="float-banner__inner">
     <div class="float-banner__text">
       <strong>New Update:</strong> I'm updating rt_hub v8.5 with new render pipeline render graph support, this update will have
-        easier render passes control and better OCIO management, also working on Maya assets import support as well.
-
+        easier render layers control and better OCIO management.
     </div>
-    <a class="float-banner__link" href="#" aria-disabled="true">Learn More</a><!-- we disable button -->
+<!--    <a class="float-banner__link" href="#" aria-disabled="true">Learn More</a>&lt;!&ndash; we disable button &ndash;&gt;-->
     <button class="float-banner__close" aria-label="Close"  >✕</button>
   </div>
 </div>
@@ -434,7 +433,7 @@
 // ---------- Intro control (video) ---------end
 
 
-      // control banner section  start
+// control banner section  -------start
       (() => {
       const banner = document.getElementById("float-banner");
       const closeBtn = banner.querySelector(".float-banner__close");
@@ -451,7 +450,7 @@
 
       closeBtn.addEventListener("click", closeBanner);
     })();
-       // control banner section  end
+// control banner section  ----------end
   </script>
 </body>
 </html>

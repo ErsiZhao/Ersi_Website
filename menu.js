@@ -19,6 +19,8 @@ async function loadMenu() {
     document.body.classList.toggle("menu-open", !isVisible);
 
     if (!isVisible) menu.scrollTop = 0;
+
+
   });
 }
 
