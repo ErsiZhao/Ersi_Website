@@ -40,7 +40,7 @@
     "description": "fully rendered and simulated in UE, Ersi Zhao Ingenuity Studios",
     "buttonText": "Offical Video",
     "youtube": "https://www.youtube.com/watch?v=1jKBywegGcI",
-    "offset": 200
+    "offset": 0
   },
   {
     "image": "images/4_spotify.png",
@@ -48,7 +48,7 @@
     "description": "Ersi Zhao Ingenuity Studios",
     "buttonText": "Offical Video",
     "youtube": "https://www.youtube.com/watch?v=4-1u3pS4Np4",
-    "offset": 200
+    "offset": 0
   },
   {
     "image": "images/5_ed.jpg",
