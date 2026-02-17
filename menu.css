@@ -110,3 +110,32 @@ html.menu-open, body.menu-open{ overflow: hidden; }
 .intro-video {
   background: transparent;
 }
+
+
+
+/*we use here to fix cross icon postion is too low for menus, so we cant select top menu without touch icon*/
+@media (max-width: 768px) {
+
+  /* add breathing room under iPhone notch / Safari bars */
+  .menu-panel, .menu, #menu, .menu-content {
+    padding-top: calc(env(safe-area-inset-top) + 20px);
+  }
+
+  /* make the X easier to tap and move it away from the top */
+  .menu-close, .close-btn, #menu-close {
+    top: calc(env(safe-area-inset-top) + 12px);
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+  }
+
+  /* make menu links easier to tap (IMDB etc) */
+  .menu a, .menu-item, .dropdown a {
+    display: block;
+    padding: 16px 18px;
+    line-height: 1.2;
+  }
+}
