@@ -115,7 +115,7 @@ html.menu-open, body.menu-open{ overflow: hidden; }
 /*disable meun make it not clickable*/
 .disabled-link {
   pointer-events: none;   /* prevents clicking */
-  opacity: 0.5;           /* visually dim */
+  opacity: 0.3;           /* visually dim */
   cursor: default;
   text-decoration: none;
 }
