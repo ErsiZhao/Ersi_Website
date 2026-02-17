@@ -199,8 +199,85 @@
   margin-top: 1rem;
   opacity: 0.85;
 }
+
+
+
+/* =========================
+   Page Title Section
+   ========================= */
+
+.page-title {
+  width: 100%;
+  text-align: center;
+  padding: 6rem 2rem 3rem 2rem;
+  background: #111;
+}
+
+.page-title h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin: 0;
+  letter-spacing: 0.08em;
+}
+
+.page-title p {
+  margin-top: 1rem;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  opacity: 0.75;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+
+
+
+
+
+   /* ==============================
+   4 Image Responsive Grid Block
+   ============================== */
+
+.four-grid {
+  width: 100%;
+  padding: 4rem 2rem;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.four-grid img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;      /* square shape */
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.four-grid img:hover {
+  transform: scale(1.05);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .four-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Phone */
+@media (max-width: 600px) {
+  .four-grid {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
+
+
+
 
 
 
@@ -209,37 +286,39 @@
   ========================== -->
 
 <body>
+<div id="menu-host"></div>
+<script src="menu.js"></script>
 
 
-  <div id="menu-host"></div>
-  <script src="menu.js"></script>
-
-    <!-- Main Content Area -->
-  <main class="gallery" id="gallery"></main> <!--id="gallery", This gives the element a unique name in the HTML document.-->
-    <section class="hero-video">
-        <video autoplay muted loop playsinline>
-        <source src="videos/mocap_01.mp4" type="video/mp4">
-  </video>
-
-  <div class="hero-overlay">
-    <h1>Motion Capture</h1>
-    <p>I maintain the inhouse OptiTrack motion-capture system, including hardware calibration, system health, troubleshooting ongoing performance optimization.
-    Design and build custom tools, assets, and rigging objects to support character capture, real-time preview, and downstream Unreal Engine workflows.
-        Support mocap shoots across multiple projects, collaborating with directors, animators, and real-time teams to capture production-ready data under tight schedules.
-Data cleanup, retargeting preparation, and pipeline integration to ensure motion-capture output meets real-time production standards.
-</p>
-      <p> -we are using base inhouse 12 cams setup<br>
-          -livelink to ue for additional visual<br>
+    <section class="page-title">
+      <h1>preproduction & tech vis</h1>
+      <p>
+        previs · techvis · Pipeline
+        Building Unreal Engine and AI-driven production workflows
       </p>
-      <p class="team-link">
-    Past team members: Ben Jannasch
-    <a href="https://www.linkedin.com/in/ben-jannasch-6a1349b9?trk=people-guest_people_search-card" target="_blank" rel="noopener noreferrer">
-      linkedin page
-    </a>
-  </p>
-  </div>
+    </section>
 
-</section>
+    <section class="four-grid">
+      <img src="images/unreal_projects/preproduction/pre_5.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_2.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_3.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_4.png" alt="">
+    </section>
+
+    <section class="four-grid">
+      <img src="images/unreal_projects/preproduction/pre_6.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_2.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_3.png" alt="">
+      <img src="images/unreal_projects/preproduction/pre_4.png" alt="">
+    </section>
+
+
+
+
+
+
+
+
 </main>
 
 

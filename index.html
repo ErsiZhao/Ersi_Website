@@ -146,6 +146,92 @@
     body.site-ready #gallery{
       opacity: 1;
     }
+
+
+
+
+
+      /* =========================
+   Floating Banner start
+   ========================= */
+
+.float-banner {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16px);
+  left: 50%;
+  transform: translate(-50%, -10px);
+  width: min(900px, calc(100vw - 24px));
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.float-banner.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.float-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+
+  padding: 12px 16px;
+  border-radius: 14px;
+
+  background: rgba(20,20,20,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+}
+
+.float-banner__text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+}
+
+.float-banner__link {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(199,158,53,0.25);
+  border: 1px solid rgba(199,158,53,0.35);
+  color: #fff;
+  font-size: 14px;
+}
+
+.float-banner__close {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile stacking */
+@media (max-width: 600px) {
+  .float-banner__inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "text close"
+      "link close";
+  }
+
+  .float-banner__text { grid-area: text; }
+  .float-banner__link { grid-area: link; }
+  .float-banner__close { grid-area: close; }
+}
+      /* =========================
+   Floating Banner end
+   ========================= */
   </style>
 </head>
 
@@ -154,14 +240,30 @@
   <div id="menu-host"></div>
   <script src="menu.js"></script>
 
-  <!-- Intro overlay (MP4 video) -->
+
+  <!-- Floating Banner start-->
+<div id="float-banner" class="float-banner">
+  <div class="float-banner__inner">
+    <div class="float-banner__text">
+      <strong>New Update:</strong> I'm updating rt_hub v8.5 with new render pipeline render graph support, this update will have
+        easier render passes control and better OCIO management, also working on Maya assets import support as well.
+
+    </div>
+    <a class="float-banner__link" href="#" aria-disabled="true">Learn More</a><!-- we disable button -->
+    <button class="float-banner__close" aria-label="Close"  >✕</button>
+  </div>
+</div>
+    <!-- Floating Banner end -->
+
+
+  <!-- Intro overlay (MP4 video) start -->
   <div id="intro" class="intro">
     <video id="introVideo" class="intro-anim"
            autoplay muted playsinline preload="auto">
       <source src="videos/intro.mp4" type="video/mp4">
     </video>
   </div>
-
+    <!-- Intro overlay (MP4 video) end -->
   <!-- Gallery -->
   <main class="gallery" id="gallery"></main>
 
@@ -275,7 +377,9 @@
       applyParallax();
     });
 
-    // ---------- Intro control (video) ----------
+
+
+    // ---------- Intro control (video) ---------- start
     (() => {
       const intro = document.getElementById('intro');
       const video = document.getElementById('introVideo');
@@ -327,6 +431,27 @@
       // Optional: click to skip
       intro.addEventListener('click', hideIntro);
     })();
+// ---------- Intro control (video) ---------end
+
+
+      // control banner section  start
+      (() => {
+      const banner = document.getElementById("float-banner");
+      const closeBtn = banner.querySelector(".float-banner__close");
+
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          banner.classList.add("show");
+        }, 600);
+      });
+
+      function closeBanner() {
+        banner.classList.remove("show");
+      }
+
+      closeBtn.addEventListener("click", closeBanner);
+    })();
+       // control banner section  end
   </script>
 </body>
 </html>

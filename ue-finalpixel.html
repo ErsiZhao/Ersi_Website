@@ -1,10 +1,257 @@
+
 <!DOCTYPE html>
 <html lang="en">
+<!--This starts the HTML document and sets the language to English.-->
+<!-- =========================
+       1️⃣ HEAD (Page Metadata)
+  ========================== -->
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+<!--  //Defines how characters are encoded (UTF-8 supports most characters from all languages).-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ersi Zhao VFX/ML</title>
+   <link rel="stylesheet" href="menu.css">
+<!--  //CSS Variables are defined here (like &#45;&#45;button-color, &#45;&#45;aspect-ratio, etc.) and can be reused in other styles.-->
+  <style>
+    :root {
+      --aspect-ratio: 1;
+      --button-color: rgba(199, 158, 53, 0.19);
+      --overlay-bg-color: 0, 0, 0;
+      --overlay-opacity: 0;
+      --image-gap: 0rem;
+      --parallax-factor: 0.2;
+      --title-font-size: 2rem;
+      --description-font-size: 1rem;
+      --visible-image-height: 1000px;
+      --base-visible-height: 2000;
+      --base-title-size: 2; /* rem */
+      --base-description-size: 1; /* rem */
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-color: #000;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    /*Defines how your top navigation bar looks and behaves.*/
+
+    header a {
+      color: white;
+      text-decoration: none;
+      margin: 0.5rem 1rem;
+      /*font-size: 15rem;*/
+    }
+     /*Styles each individual link in the header (e.g. "contact", "imdb").*/
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /*.gallery is the outer container.*/
+
+    .gallery-item {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      height: var(--visible-image-height);
+      overflow: hidden;
+    }
+    /*..gallery-item is each image block.*/
+
+    .gallery-item img {
+     position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.05s linear;
+      will-change: transform;
+      pointer-events: none;
+    }
+    /*.gallery-item img is the image inside each block.*/
+
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background-color: rgba(var(--overlay-bg-color), var(--overlay-opacity));
+      padding: 1rem;
+      border-radius: 10px;
+    }  /* is a CSS class you've defined to act as a container that sits on top of each image.*/
+
+
+
+    .overlay h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: var(--title-font-size);
+    }/*Heading Level 2*/
+
+
+
+    .overlay p {
+    font-size: var(--description-font-size);
+    }  /*Paragraph*/
+
+
+
+    .overlay a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--button-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    } /*anchor (<a>) is for buttons, links, and any click-to-go actions.*/
+
+
+
+    #welcome-mask {
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      z-index: 9999;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: all;
+      transition: opacity 1s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
+      display:block;
+    }
+
+
+    /* ✅ Responsive tweak for vertical screens (phones) */
+    /*If the screen is taller than it is wide (like a phone), it adjusts aspect ratio and font sizes.*/
+    @media (max-aspect-ratio: 3/4) {
+        :root {
+            --image-height: 75vh;
+            --aspect-ratio: 0.6;
+            --title-font-size: 2.2rem;
+            --description-font-size: 1.2rem;
+        }
+    }
+
+    /* (Optional) keep the page from scrolling behind the open menu */
+    html.menu-open, body.menu-open { overflow: hidden; }
+    .hero-video {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* full screen */
+  overflow: hidden;
+}
+
+.hero-video video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* key for cinematic look */
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.35); /* dark cinematic overlay */
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-overlay h1 {
+  font-size: 4rem;
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+
+.hero-overlay p {
+  font-size: 1rem;
+  margin-top: 1rem;
+  opacity: 0.85;
+}
+  </style>
 </head>
+
+
+
+  <!-- =========================
+       2️⃣ BODY (Visible Content)
+  ========================== -->
+
 <body>
 
+
+  <div id="menu-host"></div>
+  <script src="menu.js"></script>
+
+    <!-- Main Content Area -->
+  <main class="gallery" id="gallery"></main> <!--id="gallery", This gives the element a unique name in the HTML document.-->
+    <section class="hero-video">
+        <video autoplay muted loop playsinline>
+        <source src="videos/TW_concert/TW_concert_tech_demo.mp4" type="video/mp4">
+  </video>
+
+  <div class="hero-overlay">
+    <h1>Motion Capture</h1>
+    <p>I maintain the inhouse OptiTrack motion-capture system, including hardware calibration, system health, troubleshooting ongoing performance optimization.
+    Design and build custom tools, assets, and rigging objects to support character capture, real-time preview, and downstream Unreal Engine workflows.
+        Support mocap shoots across multiple projects, collaborating with directors, animators, and real-time teams to capture production-ready data under tight schedules.
+Data cleanup, retargeting preparation, and pipeline integration to ensure motion-capture output meets real-time production standards.
+
+</p>
+      <p class="team-link">
+    Past team members: Ben Jannasch
+    <a href="https://www.linkedin.com/in/ben-jannasch-6a1349b9?trk=people-guest_people_search-card" target="_blank" rel="noopener noreferrer">
+      linkedin page
+    </a>
+  </p>
+  </div>
+
+</section>
+</main>
+
+
+
+
+
+
+    <!-- External JavaScript -->
+  <script>
+
+  </script>
+
+
+
 </body>
+
 </html>

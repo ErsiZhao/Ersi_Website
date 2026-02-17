@@ -2,9 +2,9 @@
 
 #menu-toggle{
   position: fixed;
-  top: 3rem;
+  top: 2rem;
   left: 3rem;
-  font-size: 8rem;
+  font-size: 7rem;
   /* color: #3473d3;*/
   color: white;
   cursor: pointer;
@@ -15,7 +15,7 @@
 #dropdown-menu{
   display: none;
   position: fixed;
-  top: 15rem;     /* below ✚ */
+  top: 16rem;     /* below ✚ */
   left: 1rem;
 
 
@@ -110,6 +110,17 @@ html.menu-open, body.menu-open{ overflow: hidden; }
 .intro-video {
   background: transparent;
 }
+
+
+/*disable meun make it not clickable*/
+.disabled-link {
+  pointer-events: none;   /* prevents clicking */
+  opacity: 0.5;           /* visually dim */
+  cursor: default;
+  text-decoration: none;
+}
+/*disable meun make it not clickable ned */
+
 
 
 

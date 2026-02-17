@@ -3,114 +3,306 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact - Ersi Zhao</title>
-    <link rel="stylesheet" href="menu.css">
+  <title>Unreal VFX Pipeline - Ersi Zhao</title>
+
+  <link rel="stylesheet" href="menu.css" />
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: url('images/contact_page/Screen+Shot+2018-03-11+at+11.07.02+AM.png') center center / cover no-repeat fixed;
+      background: url('images/contact_page/Screen+Shot+2018-03-11+at+11.07.02+AM.png')
+        center center / cover no-repeat fixed;
       color: #fff;
       box-sizing: border-box;
-    }
-
-    header {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      background-color: #000;
-      padding: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    header a {
-      color: white;
-      text-decoration: none;
-      margin: 0.5rem 1rem;
-      font-size: 1rem;
-      text-transform: uppercase;
     }
 
     .content {
       background-color: rgba(0, 0, 0, 0.6);
       padding: 2rem;
       border-radius: 12px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 5vh auto;
     }
 
     h1 {
-      margin-top: 0;
+      margin: 0 0 0.75rem 0;
       font-size: 3rem;
+      text-transform: lowercase;
     }
 
     p {
       line-height: 1.6;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem 0;
     }
 
     .section-title {
       margin-top: 2rem;
+      margin-bottom: 0.75rem;
       font-size: 1.8rem;
       text-decoration: underline;
     }
+
+    .hero-image {
+      width: 100%;
+      border-radius: 10px;
+      margin: 2rem 0;
+      display: block;
+    }
+
+    /* ==============================
+       Responsive 2-image grid block
+       ============================== */
+    .two-grid {
+      width: 100%;
+      margin: 1.5rem 0 2rem 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .two-grid img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+
+    .two-grid img:hover {
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 600px) {
+      .two-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cleaner list formatting */
+    ol {
+      padding-left: 1.2rem;
+      margin: 0 0 1rem 0;
+    }
+
+    li {
+      margin-bottom: 1rem;
+    }
+
+    li strong {
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    ul {
+      margin: 0.4rem 0 0 0;
+      padding-left: 1.2rem;
+    }
+
+    ul li {
+      margin-bottom: 0.35rem;
+    }
+
+
+
+
+
+
+
+    /* =========================
+   Floating Banner start
+   ========================= */
+
+.float-banner {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16px);
+  left: 50%;
+  transform: translate(-50%, -10px);
+  width: min(900px, calc(100vw - 24px));
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.float-banner.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.float-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+
+  padding: 12px 16px;
+  border-radius: 14px;
+
+  background: rgba(20,20,20,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+}
+
+.float-banner__text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+}
+
+.float-banner__link {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(199,158,53,0.25);
+  border: 1px solid rgba(199,158,53,0.35);
+  color: #fff;
+  font-size: 14px;
+}
+
+.float-banner__close {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile stacking */
+@media (max-width: 600px) {
+  .float-banner__inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "text close"
+      "link close";
+  }
+
+  .float-banner__text { grid-area: text; }
+  .float-banner__link { grid-area: link; }
+  .float-banner__close { grid-area: close; }
+}
+      /* =========================
+   Floating Banner end
+   ========================= */
   </style>
 </head>
+
 <body>
   <div id="menu-host"></div>
   <script src="menu.js"></script>
 
+  <!-- Floating Banner start-->
+<div id="float-banner" class="float-banner">
+  <div class="float-banner__inner">
+    <div class="float-banner__text">
+      <strong>New Update:</strong> I'm updating rt_hub v8.5 with new render pipeline render graph support, this update will have
+        easier render passes control and better OCIO management, also working on Maya assets import support as well.
+
+    </div>
+    <a class="float-banner__link" href="">Learn More</a>
+    <button class="float-banner__close" aria-label="Close">✕</button>
+  </div>
+</div>
+    <!-- Floating Banner end -->
+
+
   <div class="content">
-    <h1>unreal vfx pipeline</h1>
-    <p>developed tool rt_hub which allow unreal access to deadline render farm and SG</p>
-
-
+    <h1>unreal vfx pipeline tool- rt_hub(v8.5)</h1>
+    <p>Active Developing <strong>rt_hub</strong>, enabling Unreal to access Deadline render farm and ShotGrid.</p>
 
     <p class="section-title">Key functions</p>
-      <img src="images/pipeline/images/tool_01.png"
-     alt="rt_hub pipeline tool"
-     style="max-width: 100%; border-radius: 10px; margin: 2rem 0;">
-    <p>
-        1. local Render/deadline Automation<br>
-        -fully integrate into ingenuity studio render pipeline structure<br>
-        -supports integration with DeadlineService for distributed rendering along with perforce integration.<br>
-        -light selects render passes automation <br>
-        -ndisplay render passes automation (rendering with nDisplay-specific settings).<br>
 
-        2. Plugin Management<br>
-        Contains a script like rt_plugin.py that:<br>
-        Detects and updates installed plugins.<br>
+    <img
+      src="images/pipeline/images/tool_01.png"
+      alt="rt_hub pipeline tool"
+      class="hero-image"
+    />
 
-        Sends a notification popup showing which plugins were updated.<br>
+    <section class="two-grid" aria-label="Pipeline screenshots">
+      <img src="images/unreal_projects/preproduction/pre_7.png" alt="Preproduction screenshot 7" />
+      <img src="images/unreal_projects/preproduction/pre_8.png" alt="Preproduction screenshot 8" />
+    </section>
 
-        3. ShotGrid Integration<br>
-        -Includes tools like download_from_SG.py and ShotGrid API logic. this allow user fully sync your shots with SG<br>
+    <ol>
+      <li>
+        <strong>Local Render / Deadline Automation</strong>
+        <ul>
+          <li>Fully integrated into Ingenuity Studios render pipeline structure</li>
+          <li>Supports DeadlineService distributed rendering + Perforce integration</li>
+          <li>Light Selects render passes automation</li>
+          <li>nDisplay render passes automation (nDisplay-specific settings)</li>
+        </ul>
+      </li>
 
-        -Handles authentication, token management, and asset syncing between ShotGrid and Unreal.<br>
+      <li>
+        <strong>Plugin Management</strong>
+        <ul>
+          <li>Script like <code>rt_plugin.py</code> detects and updates installed plugins</li>
+          <li>Notification popup showing which plugins were updated</li>
+        </ul>
+      </li>
 
-        -Might be used to automate asset pulls for project folders (e.g., grasslands_001).<br>
+      <li>
+        <strong>ShotGrid Integration</strong>
+        <ul>
+          <li>Tools like <code>download_from_SG.py</code> sync shots with SG</li>
+          <li>Authentication + token management + asset syncing between ShotGrid and Unreal</li>
+        </ul>
+      </li>
 
-        4. Perforce Integration<br>
-        Includes logic to check whether files are checked out or writable.<br>
+      <li>
+        <strong>Perforce Integration</strong>
+        <ul>
+          <li>Checks whether files are checked out or writable</li>
+          <li>Sets up folder structures and links assets to Perforce workspaces</li>
+        </ul>
+      </li>
 
-        Possibly sets up folder structures and links assets to Perforce workspaces.<br>
+      <li>
+        <strong>Configuration Management</strong>
+        <ul>
+          <li>Centralized logic via <code>RtInfos</code>, <code>RenderSetting</code> (paths, resolution, AA, Object ID types)</li>
+          <li>Makes render/asset jobs environment-independent and project-aware</li>
+        </ul>
+      </li>
+    </ol>
 
-        5. Configuration Management<br>
-        Centralized logic via:<br>
+    <p class="section-title">WIP functions</p>
+    <ol>
+      <li>OCIO support for SG mov updates (currently SG mov only has sRGB/Rec709 LUT within ffmpeg)</li>
+      <li>Shot plates import automation with backdrop</li>
+      <li>Additional toolset</li>
+    </ol>
+  </div>
 
-        RtInfos (project paths, content directory)<br>
+  <script>
+      // Optional: page-specific JS can go here
 
-        RenderSetting (resolution, aliasing, object ID types)<br>
-        Makes your render or asset jobs environment-independent and project-aware.</p>
+      // control banner section  start
+      (() => {
+      const banner = document.getElementById("float-banner");
+      const closeBtn = banner.querySelector(".float-banner__close");
 
-      <p class="section-title">WIP functions</p>
-    <p>
-        1. OCIO support for SG mov updates(currently mov on SG only has SRGB/Rec709 lut within ffmpeg)<br>
-        2. shot plates import automation with backdrop<br>
-        3. addtional toolset <br>
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          banner.classList.add("show");
+        }, 600);
+      });
 
+      function closeBanner() {
+        banner.classList.remove("show");
+      }
 
+      closeBtn.addEventListener("click", closeBanner);
+    })();
+       // control banner section  end
+  </script>
 </body>
 </html>
