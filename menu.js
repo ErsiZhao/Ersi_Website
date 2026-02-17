@@ -23,3 +23,4 @@ async function loadMenu() {
 }
 
 window.addEventListener("DOMContentLoaded", loadMenu);
+

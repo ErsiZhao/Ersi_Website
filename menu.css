@@ -5,7 +5,8 @@
   top: 3rem;
   left: 3rem;
   font-size: 8rem;
-  color: #3473d3;
+  /* color: #3473d3;*/
+  color: white;
   cursor: pointer;
   z-index: 2000;
   user-select: none;
@@ -98,3 +99,14 @@ details.ue[open] > summary::after{ content:" ▾"; }
 
 /* lock page scroll behind menu */
 html.menu-open, body.menu-open{ overflow: hidden; }
+
+
+
+
+.intro {
+  background: transparent;
+}
+
+.intro-video {
+  background: transparent;
+}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ersi Zhao VFX/ML</title>
+
+  <!-- Menu (shared) -->
+  <link rel="stylesheet" href="menu.css">
+
+  <!-- Preload intro (faster) -->
+  <link rel="preload" as="image" href="videos/intro_v03.webp" type="image/webp">
+
+  <style>
+    :root {
+      --aspect-ratio: 1;
+      --button-color: rgba(199, 158, 53, 0.19);
+      --overlay-bg-color: 0, 0, 0;
+      --overlay-opacity: 0;
+      --image-gap: 0rem;
+      --parallax-factor: 0.2;
+      --title-font-size: 2rem;
+      --description-font-size: 1rem;
+      --visible-image-height: 500px;
+      --base-visible-height: 400;
+      --base-title-size: 2; /* rem */
+      --base-description-size: 1; /* rem */
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gallery-item {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      height: var(--visible-image-height);
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.05s linear;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background-color: rgba(var(--overlay-bg-color), var(--overlay-opacity));
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .overlay h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: var(--title-font-size);
+    }
+
+    .overlay p {
+      font-size: var(--description-font-size);
+    }
+
+    .overlay a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--button-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    /* Responsive tweak for vertical screens */
+    @media (max-aspect-ratio: 3/4) {
+      :root {
+        --image-height: 75vh;
+        --aspect-ratio: 0.6;
+        --title-font-size: 2.2rem;
+        --description-font-size: 1.2rem;
+      }
+    }
+
+    /* prevent scrolling while menu is visible */
+    html.menu-open, body.menu-open { overflow: hidden; }
+
+    /* =========================
+       Intro WebP overlay
+       ========================= */
+    .intro{
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: transparent;         /* ✅ keep alpha visible */
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+      pointer-events: all;
+    }
+
+    .intro-anim{
+
+     position: absolute;
+          top: 50%;
+          left: 50%;
+
+          width: 100vw;
+          height: 100vh;
+
+          object-fit: cover;          /* 🔥 makes it fill entire screen */
+          transform: translate(-50%, -50%);
+            }
+
+    .intro.intro-hide{
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.intro-lock, body.intro-lock{
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Menu injected -->
+  <div id="menu-host"></div>
+  <script src="menu.js"></script>
+
+  <!-- Intro overlay (WebP animated) -->
+  <div id="intro" class="intro">
+    <img src="videos/intro_v03.webp" class="intro-anim" alt="Loading" />
+  </div>
+
+  <!-- Gallery -->
+  <main class="gallery" id="gallery"></main>
+
+  <script>
+    let galleryReadyResolve;
+    const galleryReady = new Promise((resolve) => (galleryReadyResolve = resolve));
+
+
+
+    // Build gallery from JSON
+    fetch('projects.json')
+  .then(r => r.json())
+  .then(async (data) => {
+    const gallery = document.getElementById('gallery');
+
+    data.forEach((project) => {
+      const item = document.createElement('div');
+      item.className = 'gallery-item';
+
+      const img = document.createElement('img');
+      img.src = project.image;
+      img.alt = project.title;
+      img.dataset.offset = project.offset || 0;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay';
+      overlay.innerHTML = `
+        <h2>${project.title}</h2>
+        <p style="margin: 0.5rem 0 1rem 0; font-size: var(--description-font-size); color: #ccc;">
+          ${project.description || ''}
+        </p>
+        <a href="${project.youtube}" target="_blank" rel="noopener noreferrer">${project.buttonText}</a>
+      `;
+
+      item.appendChild(img);
+      item.appendChild(overlay);
+      gallery.appendChild(item);
+    });
+
+    // Wait until images are actually decodable/paintable (prevents black flash)
+    const imgs = [...document.querySelectorAll('.gallery-item img')];
+
+    await Promise.all(
+      imgs.map((img) =>
+        (img.decode ? img.decode() : Promise.resolve()).catch(() => {
+          return new Promise((res) => {
+            if (img.complete) return res();
+            img.addEventListener('load', res, { once: true });
+            img.addEventListener('error', res, { once: true });
+          });
+        })
+      )
+    );
+
+    updateLayoutSizes();
+    applyParallax();
+
+    galleryReadyResolve();
+  })
+  .catch(err => {
+    console.error('Failed to load projects.json', err);
+    // Don't get stuck on intro if JSON fails
+    galleryReadyResolve();
+  });
+
+
+
+
+
+
+    // Parallax
+    let ticking = false;
+    const parallaxFactor = 0.2;
+
+    function applyParallax() {
+      const images = document.querySelectorAll('.gallery-item img');
+      const windowHeight = window.innerHeight;
+
+      images.forEach((img) => {
+        const item = img.closest('.gallery-item');
+        const rect = item.getBoundingClientRect();
+        const center = rect.top + rect.height / 2 - windowHeight / 2;
+        const offset = parseFloat(img.dataset.offset || 0);
+        img.style.transform = `translate(-50%, calc(-50% + ${offset + center * -parallaxFactor}px))`;
+      });
+
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(applyParallax);
+        ticking = true;
+      }
+    });
+
+    // Responsive font + visible-image-height scaling
+    function updateLayoutSizes() {
+      const aspect = window.innerWidth / window.innerHeight;
+
+      const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
+      const baseDesc = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
+      const fontScale = aspect / 1.7;
+
+      document.documentElement.style.setProperty('--title-font-size', `${baseTitle * fontScale}rem`);
+      document.documentElement.style.setProperty('--description-font-size', `${baseDesc * fontScale}rem`);
+
+      const baseVisibleHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-visible-height'));
+      const heightScale = aspect / 1.7;
+      document.documentElement.style.setProperty('--visible-image-height', `${baseVisibleHeight * heightScale}px`);
+    }
+
+    window.addEventListener('resize', () => {
+      updateLayoutSizes();
+      applyParallax();
+    });
+    window.addEventListener('load', () => {
+      updateLayoutSizes();
+      applyParallax();
+    });
+
+
+
+
+        (() => {
+      const intro = document.getElementById('intro');
+
+      const INTRO_MIN_MS = 2500;
+      const INTRO_MAX_MS = 8000;
+
+      document.documentElement.classList.add('intro-lock');
+      document.body.classList.add('intro-lock');
+
+      function hideIntro() {
+        intro.classList.add('intro-hide');
+
+        document.documentElement.classList.remove('intro-lock');
+        document.body.classList.remove('intro-lock');
+
+        setTimeout(() => intro.remove(), 900);
+      }
+
+      const minDelay = new Promise(res => setTimeout(res, INTRO_MIN_MS));
+      const maxDelay = new Promise(res => setTimeout(res, INTRO_MAX_MS));
+
+      Promise.race([
+        Promise.all([minDelay, galleryReady]),
+        maxDelay
+      ]).then(hideIntro);
+
+      intro.addEventListener('click', hideIntro);
+    })();
+  </script>
+</body>
+</html>

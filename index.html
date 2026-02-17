@@ -1,17 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<!--This starts the HTML document and sets the language to English.-->
-<!-- =========================
-       1️⃣ HEAD (Page Metadata)
-  ========================== -->
 <head>
   <meta charset="UTF-8" />
-<!--  //Defines how characters are encoded (UTF-8 supports most characters from all languages).-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ersi Zhao VFX/ML</title>
-   <link rel="stylesheet" href="menu.css">
-<!--  //CSS Variables are defined here (like &#45;&#45;button-color, &#45;&#45;aspect-ratio, etc.) and can be reused in other styles.-->
+
+  <!-- Menu (shared) -->
+  <link rel="stylesheet" href="menu.css">
+
+  <!-- Preload intro video -->
+  <link rel="preload" as="video" href="videos/logo/ersistant_anim_v01.mp4" type="video/mp4">
+
   <style>
     :root {
       --aspect-ratio: 1;
@@ -35,32 +34,11 @@
       color: #fff;
     }
 
-    header {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      background-color: #000;
-      padding: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    /*Defines how your top navigation bar looks and behaves.*/
-
-    header a {
-      color: white;
-      text-decoration: none;
-      margin: 0.5rem 1rem;
-      /*font-size: 15rem;*/
-    }
-     /*Styles each individual link in the header (e.g. "contact", "imdb").*/
-
     .gallery {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    /*.gallery is the outer container.*/
 
     .gallery-item {
       position: relative;
@@ -69,10 +47,9 @@
       height: var(--visible-image-height);
       overflow: hidden;
     }
-    /*..gallery-item is each image block.*/
 
     .gallery-item img {
-     position: absolute;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -83,8 +60,6 @@
       will-change: transform;
       pointer-events: none;
     }
-    /*.gallery-item img is the image inside each block.*/
-
 
     .overlay {
       position: absolute;
@@ -95,22 +70,16 @@
       background-color: rgba(var(--overlay-bg-color), var(--overlay-opacity));
       padding: 1rem;
       border-radius: 10px;
-    }  /* is a CSS class you've defined to act as a container that sits on top of each image.*/
-
-
+    }
 
     .overlay h2 {
       margin: 0 0 0.5rem 0;
       font-size: var(--title-font-size);
-    }/*Heading Level 2*/
-
-
+    }
 
     .overlay p {
-    font-size: var(--description-font-size);
-    }  /*Paragraph*/
-
-
+      font-size: var(--description-font-size);
+    }
 
     .overlay a {
       display: inline-block;
@@ -120,138 +89,147 @@
       text-decoration: none;
       border-radius: 5px;
       font-size: 1rem;
-    } /*anchor (<a>) is for buttons, links, and any click-to-go actions.*/
+    }
 
+    /* Responsive tweak for vertical screens */
+    @media (max-aspect-ratio: 3/4) {
+      :root {
+        --image-height: 75vh;
+        --aspect-ratio: 0.6;
+        --title-font-size: 2.2rem;
+        --description-font-size: 1.2rem;
+      }
+    }
 
+    /* prevent scrolling while menu is visible */
+    html.menu-open, body.menu-open { overflow: hidden; }
 
-    #welcome-mask {
+    /* =========================
+       Intro Video overlay
+       ========================= */
+    .intro{
       position: fixed;
       inset: 0;
-      background: transparent;
-      z-index: 9999;
-      width: 100vw;
-      height: 100vh;
+      z-index: 99999;
+      background: #111;               /* important: prevents any black flash */
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transition: opacity 0.8s ease;
       pointer-events: all;
-      transition: opacity 1s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
-    svg {
+
+    .intro video{
+      position: absolute;
+      inset: 0;
       width: 100vw;
       height: 100vh;
-      display:block;
+      object-fit: cover;
     }
 
-
-    /* ✅ Responsive tweak for vertical screens (phones) */
-    /*If the screen is taller than it is wide (like a phone), it adjusts aspect ratio and font sizes.*/
-    @media (max-aspect-ratio: 3/4) {
-        :root {
-            --image-height: 75vh;
-            --aspect-ratio: 0.6;
-            --title-font-size: 2.2rem;
-            --description-font-size: 1.2rem;
-        }
+    .intro.intro-hide{
+      opacity: 0;
+      pointer-events: none;
     }
 
-    /* (Optional) keep the page from scrolling behind the open menu */
-    html.menu-open, body.menu-open { overflow: hidden; }
+    html.intro-lock, body.intro-lock{
+      overflow: hidden;
+    }
+
+    /* Crossfade: site starts hidden until intro ends */
+    #menu-host, #gallery{
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    body.site-ready #menu-host,
+    body.site-ready #gallery{
+      opacity: 1;
+    }
   </style>
 </head>
 
-
-
-  <!-- =========================
-       2️⃣ BODY (Visible Content)
-  ========================== -->
-
 <body>
-
-
+  <!-- Menu injected -->
   <div id="menu-host"></div>
   <script src="menu.js"></script>
 
-    <!-- Main Content Area -->
-  <main class="gallery" id="gallery"></main> <!--id="gallery", This gives the element a unique name in the HTML document.-->
+  <!-- Intro overlay (MP4 video) -->
+  <div id="intro" class="intro">
+    <video id="introVideo" class="intro-anim"
+           autoplay muted playsinline preload="auto">
+      <source src="videos/intro.mp4" type="video/mp4">
+    </video>
+  </div>
 
+  <!-- Gallery -->
+  <main class="gallery" id="gallery"></main>
 
-
-
-
-
-
-    <!-- External JavaScript -->
   <script>
+    // ---------- readiness gate ----------
+    let galleryReadyResolve;
+    const galleryReady = new Promise((resolve) => (galleryReadyResolve = resolve));
+
+    // ---------- Build gallery from JSON ----------
     fetch('projects.json')
-      .then(response => response.json())// Convert the response into usable JSON data (turns text into an object/array in JavaScript).
-      .then(data => {
-        const gallery = document.getElementById('gallery'); // here we get this body gallery
+      .then(r => r.json())
+      .then(async (data) => {
+        const gallery = document.getElementById('gallery');
 
-
-        data.forEach((project, index) => {
+        data.forEach((project) => {
           const item = document.createElement('div');
-          //we loop through each one in json file, and then create division element for each image
           item.className = 'gallery-item';
-          // assign gallery-item to this item to give this item a style.
-
-
 
           const img = document.createElement('img');
-          // create image element
           img.src = project.image;
           img.alt = project.title;
           img.dataset.offset = project.offset || 0;
-          // find info of this image
-
-
 
           const overlay = document.createElement('div');
           overlay.className = 'overlay';
-          //assign overlay style to this element
           overlay.innerHTML = `
             <h2>${project.title}</h2>
             <p style="margin: 0.5rem 0 1rem 0; font-size: var(--description-font-size); color: #ccc;">
               ${project.description || ''}
             </p>
-            <a href="${project.youtube}" target="_blank">    ${project.buttonText}</a>
+            <a href="${project.youtube}" target="_blank" rel="noopener noreferrer">${project.buttonText}</a>
           `;
-
-
-
 
           item.appendChild(img);
           item.appendChild(overlay);
-          //we add img and overlay into the item division and then we add item into the gallery division
           gallery.appendChild(item);
         });
+
+        // Wait until images are decodable/paintable
+        const imgs = [...document.querySelectorAll('.gallery-item img')];
+        await Promise.all(
+          imgs.map((img) =>
+            (img.decode ? img.decode() : Promise.resolve()).catch(() => {
+              return new Promise((res) => {
+                if (img.complete) return res();
+                img.addEventListener('load', res, { once: true });
+                img.addEventListener('error', res, { once: true });
+              });
+            })
+          )
+        );
+
+        updateLayoutSizes();
+        applyParallax();
+
+        galleryReadyResolve();
+      })
+      .catch(err => {
+        console.error('Failed to load projects.json', err);
+        galleryReadyResolve();
       });
 
-
-    // don't need these two anymore
-    const colorPicker = document.getElementById('colorPicker');
-    colorPicker.addEventListener('input', (e) => {
-      document.documentElement.style.setProperty('--button-color', e.target.value);
-    });
-
-
-    const parallaxSlider = document.getElementById('parallaxSlider');
-    let parallaxFactor = parseFloat(parallaxSlider.value);
-    parallaxSlider.addEventListener('input', (e) => {
-      parallaxFactor = parseFloat(e.target.value);
-    });
-
+    // ---------- Parallax ----------
     let ticking = false;
-    //-------------------------------------------------------------------dont need-----------------
-
-
-
+    const parallaxFactor = 0.2;
 
     function applyParallax() {
       const images = document.querySelectorAll('.gallery-item img');
       const windowHeight = window.innerHeight;
-      //Get all images and the height of the browser window.
-
 
       images.forEach((img) => {
         const item = img.closest('.gallery-item');
@@ -260,6 +238,7 @@
         const offset = parseFloat(img.dataset.offset || 0);
         img.style.transform = `translate(-50%, calc(-50% + ${offset + center * -parallaxFactor}px))`;
       });
+
       ticking = false;
     }
 
@@ -269,87 +248,84 @@
         ticking = true;
       }
     });
-  </script>
 
+    // ---------- Responsive sizing ----------
+    function updateLayoutSizes() {
+      const aspect = window.innerWidth / window.innerHeight;
 
+      const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
+      const baseDesc  = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
+      const fontScale = aspect / 1.7;
 
+      document.documentElement.style.setProperty('--title-font-size', `${baseTitle * fontScale}rem`);
+      document.documentElement.style.setProperty('--description-font-size', `${baseDesc * fontScale}rem`);
 
+      const baseVisibleHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-visible-height'));
+      const heightScale = aspect / 1.7;
+      document.documentElement.style.setProperty('--visible-image-height', `${baseVisibleHeight * heightScale}px`);
+    }
 
-  <script>
-    //scaling font size
-      function updateFontSizes() {
-        const aspect = window.innerWidth / window.innerHeight;
-        const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
-        const baseDesc = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
-        const scale = aspect / 1.7;
-
-        document.documentElement.style.setProperty('--title-font-size', `${baseTitle * scale}rem`);
-        document.documentElement.style.setProperty('--description-font-size', `${baseDesc * scale}rem`);
-      }
-
-      window.addEventListener('resize', updateFontSizes);
-      window.addEventListener('load', updateFontSizes);
-  </script>
-
-
-
-
-
-
-  <script>
-      function updateLayoutSizes() {
-        const aspect = window.innerWidth / window.innerHeight;
-
-        // Font scaling (already working)
-        const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
-        const baseDesc = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
-        const fontScale = aspect / 1.7;
-        document.documentElement.style.setProperty('--title-font-size', `${baseTitle * fontScale}rem`);
-        document.documentElement.style.setProperty('--description-font-size', `${baseDesc * fontScale}rem`);
-
-        // Image mask height scaling
-        const baseVisibleHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-visible-height'));; // base visible-image-height in px
-        const heightScale = aspect / 1.7;
-        document.documentElement.style.setProperty('--visible-image-height', `${baseVisibleHeight * heightScale}px`);
-      }
-
-      window.addEventListener('resize', updateLayoutSizes);
-      window.addEventListener('load', updateLayoutSizes);
-  </script>
-
-
-  <!--  //drop down main menu control, this will make sure we could scroll menu on the phone-->
-  <script>
-    // this part is new
-  const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('dropdown-menu');
-
-  toggle.addEventListener('click', () => {
-    const isVisible = menu.style.display === 'block';
-    menu.style.display = isVisible ? 'none' : 'block';
-    toggle.textContent = isVisible ? '✚' : '✕';
-
-    // lock/unlock background scroll when menu is open
-    document.documentElement.classList.toggle('menu-open', !isVisible);
-    document.body.classList.toggle('menu-open', !isVisible);
-  });
-</script>
-
-
-
-
-  <script>
-    const welcome = document.getElementById('welcome-mask');
-    welcome.addEventListener('click', () => {
-      welcome.style.opacity = '0';
-      welcome.style.pointerEvents = 'none';
-      setTimeout(() => welcome.remove(), 1000);
+    window.addEventListener('resize', () => {
+      updateLayoutSizes();
+      applyParallax();
     });
+    window.addEventListener('load', () => {
+      updateLayoutSizes();
+      applyParallax();
+    });
+
+    // ---------- Intro control (video) ----------
+    (() => {
+      const intro = document.getElementById('intro');
+      const video = document.getElementById('introVideo');
+
+      const INTRO_MIN_MS = 1200;  // don't cut instantly
+      const INTRO_MAX_MS = 10000; // safety
+
+      document.documentElement.classList.add('intro-lock');
+      document.body.classList.add('intro-lock');
+
+      let endedResolve;
+      const videoEnded = new Promise((resolve) => (endedResolve = resolve));
+
+      // Resolve when video ends OR fails
+      video.addEventListener('ended', () => endedResolve(), { once: true });
+      video.addEventListener('error', () => endedResolve(), { once: true });
+
+      // In some browsers autoplay might be blocked; try play() safely
+      video.play().catch(() => {
+        // still allow flow; user can click to skip
+      });
+
+      function hideIntro() {
+        // Crossfade: show site first
+        document.body.classList.add('site-ready');
+
+        // next frame(s): fade intro out
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            intro.classList.add('intro-hide');
+
+            document.documentElement.classList.remove('intro-lock');
+            document.body.classList.remove('intro-lock');
+
+            setTimeout(() => intro.remove(), 900);
+          });
+        });
+      }
+
+      const minDelay = new Promise(res => setTimeout(res, INTRO_MIN_MS));
+      const maxDelay = new Promise(res => setTimeout(res, INTRO_MAX_MS));
+
+      // Hide when: (min time + gallery ready + video ended) OR max timeout
+      Promise.race([
+        Promise.all([minDelay, galleryReady, videoEnded]),
+        maxDelay
+      ]).then(hideIntro);
+
+      // Optional: click to skip
+      intro.addEventListener('click', hideIntro);
+    })();
   </script>
-
-
-
-
 </body>
-
 </html>
