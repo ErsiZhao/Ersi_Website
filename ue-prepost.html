@@ -273,6 +273,15 @@
 @media (max-width: 600px) {
   .four-grid {
     grid-template-columns: 1fr;
+  .four-grid img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;      /* square shape */
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
   }
 }
   </style>
