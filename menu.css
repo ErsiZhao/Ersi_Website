@@ -28,6 +28,7 @@
   font-size: 2rem;
   line-height: 3rem;
 
+   max-height: calc(100vh - 18rem);
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
