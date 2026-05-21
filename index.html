@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ersi Zhao VFX/ML</title>
+
+  <!-- Menu (shared) -->
+  <link rel="stylesheet" href="menu.css">
+
+
+<!--  &lt;!&ndash; Preload intro video &ndash;&gt;-->
+<!--  <link rel="preload" as="video" href="videos/logo/ersistant_anim_v01.mp4" type="video/mp4">-->
+
+  <style>
+    :root {
+      --aspect-ratio: 1;
+      --button-color: rgba(199, 158, 53, 0.19);
+      --overlay-bg-color: 0, 0, 0;
+      --overlay-opacity: 0;
+      --image-gap: 0rem;
+      --parallax-factor: 0.2;
+      --title-font-size: 2rem;
+      --description-font-size: 1rem;
+      --visible-image-height: 500px;
+      --base-visible-height: 400;
+      --base-title-size: 2; /* rem */
+      --base-description-size: 1; /* rem */
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gallery-item {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      height: var(--visible-image-height);
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.05s linear;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background-color: rgba(var(--overlay-bg-color), var(--overlay-opacity));
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .overlay h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: var(--title-font-size);
+    }
+
+    .overlay p {
+      font-size: var(--description-font-size);
+    }
+
+    .overlay a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--button-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    /* Responsive tweak for vertical screens */
+    @media (max-aspect-ratio: 3/4) {
+      :root {
+        --image-height: 75vh;
+        --aspect-ratio: 0.6;
+        --title-font-size: 2.2rem;
+        --description-font-size: 1.2rem;
+      }
+    }
+
+    /* prevent scrolling while menu is visible */
+    html.menu-open, body.menu-open { overflow: hidden; }
+
+
+    /*!* =========================*/
+    /*   Intro Video overlay*/
+    /*   ========================= *!*/
+    /*.intro{*/
+    /*  position: fixed;*/
+    /*  inset: 0;*/
+    /*  z-index: 99999;*/
+    /*  background: #111;               !* important: prevents any black flash *!*/
+    /*  display: grid;*/
+    /*  place-items: center;*/
+    /*  opacity: 1;*/
+    /*  transition: opacity 0.8s ease;*/
+    /*  pointer-events: all;*/
+    /*}*/
+
+    /*.intro video{*/
+    /*  position: absolute;*/
+    /*  inset: 0;*/
+    /*  width: 100vw;*/
+    /*  height: 100dvh;*/
+    /*  object-fit: cover;*/
+    /*}*/
+
+    /*.intro.intro-hide{*/
+    /*  opacity: 0;*/
+    /*  pointer-events: none;*/
+    /*}*/
+
+    /*html.intro-lock, body.intro-lock{*/
+    /*  overflow: hidden;*/
+    /*}*/
+
+    /*!* Crossfade: site starts hidden until intro ends *!*/
+    /*#menu-host, #gallery{*/
+    /*  opacity: 0;*/
+    /*  transition: opacity 0.8s ease;*/
+    /*}*/
+    /*body.site-ready #menu-host,*/
+    /*body.site-ready #gallery{*/
+    /*  opacity: 1;*/
+    /*}*/
+
+
+
+
+
+/* =========================
+Floating Banner start
+========================= */
+
+.float-banner {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16px);
+  left: 50%;
+  transform: translate(-50%, -10px);
+  width: min(900px, calc(100vw - 24px));
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.float-banner.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.float-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+
+  padding: 12px 16px;
+  border-radius: 14px;
+
+  background: rgba(20,20,20,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+}
+
+.float-banner__text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+}
+
+.float-banner__link {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(199,158,53,0.25);
+  border: 1px solid rgba(199,158,53,0.35);
+  color: #fff;
+  font-size: 14px;
+}
+
+.float-banner__close {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile stacking */
+@media (max-width: 600px) {
+  .float-banner__inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "text close"
+      "link close";
+  }
+
+  .float-banner__text { grid-area: text; }
+  .float-banner__link { grid-area: link; }
+  .float-banner__close { grid-area: close; }
+}
+
+
+/* =========================
+Floating Banner end
+========================= */
+
+   /* ── Carousel ── */
+  /* ── Carousel ── */
+    .carousel {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+  body.site-ready .carousel { opacity: 1; }
+
+  .slides-wrapper {
+    display: flex;
+    height: 100vh;
+    transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+
+    .slide-caption {
+      position: absolute;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+
+
+
+
+
+    .slide-title {
+      color: white;
+      font-size: clamp(2.5rem, 10vw, 8rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+      white-space: nowrap;
+      display: block;
+    }
+
+    .slide-subtitle {
+      color: rgba(255,255,255,0.7);
+      font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+      white-space: nowrap;
+      display: block;
+    }
+
+
+
+  .slide-1 { background: url('images/landing_hero.jpg') center/cover no-repeat; cursor: pointer; }
+  .slide-2 { background: #000; }
+  .slide-3 { background: url('images/7_clouds.png') center/cover no-repeat; }
+  .slide-4 { background: url('images/4_spotify_v03.png') center/cover no-repeat; }
+
+
+  .slide-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100vw, 177.78vh);
+    height: max(100vh, 56.25vw);
+    border: none;
+    pointer-events: none;
+  }
+
+
+  /* ── Arrows ── */
+  .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 4rem;
+    cursor: pointer;
+    z-index: 500;
+    padding: 1rem 1.5rem;
+    opacity: 0.55;
+    transition: opacity 0.2s, transform 0.2s;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.15); }
+  .arrow-left  { left: 1rem; }
+  .arrow-right { right: 1rem; }
+  .arrow.hidden { visibility: hidden; pointer-events: none; }
+
+  /* ── Dots ── */
+  .dots {
+    position: absolute;
+    bottom: 3.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.6rem;
+    z-index: 500;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transition: background 0.3s;
+  }
+
+  .dot.active { background: rgba(255,255,255,0.9); }
+
+
+
+  /* ── Video modal ── */
+  #videoModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.96);
+    z-index: 3000;
+  }
+
+  #videoModal.open { display: block; }
+
+  #videoModal iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100vw, 177.78vh);
+    height: min(100vh, 56.25vw);
+    border: none;
+  }
+
+  #modalClose {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.8rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 3001;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  #modalClose:hover { opacity: 1; }
+
+
+
+   /* ── Scroll hint ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .scroll-hint.visible { opacity: 1; }
+
+  .scroll-hint span {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+  }
+
+  .scroll-hint svg {
+    animation: scrollBounce 1.4s ease-in-out infinite;
+  }
+
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(6px); }
+  }
+
+  /*play-icon for demo reel*/
+  .play-icon {
+    position: absolute;
+    bottom: 17rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5rem;
+    height: 5rem;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .slide-1:hover .play-icon {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+  </style>
+
+</head>
+
+
+
+
+
+
+
+
+
+
+
+<body>
+  <!-- Menu injected -->
+  <div id="menu-host"></div>
+  <script src="menu.js"></script>
+
+
+
+
+  <!-- Floating Banner start-->
+<div id="float-banner" class="float-banner">
+  <div class="float-banner__inner">
+    <div class="float-banner__text">
+      <strong>New Update:</strong> added a few projects here, most of them are listed on IMDB.
+    </div>
+<!--    <a class="float-banner__link" href="#" aria-disabled="true">Learn More</a>&lt;!&ndash; we disable button &ndash;&gt;-->
+    <button class="float-banner__close" aria-label="Close"  >✕</button>
+  </div>
+</div>
+    <!-- Floating Banner end -->
+
+
+
+
+
+
+
+<!--  &lt;!&ndash; Intro overlay (MP4 video) start &ndash;&gt;-->
+<!--  <div id="intro" class="intro">-->
+<!--    <video id="introVideo" class="intro-anim"-->
+<!--           autoplay muted playsinline preload="auto">-->
+<!--      <source src="videos/intro.mp4" type="video/mp4">-->
+<!--    </video>-->
+<!--  </div>-->
+<!--    &lt;!&ndash; Intro overlay (MP4 video) end &ndash;&gt;-->
+
+
+
+
+    <!-- Carousel: 4 horizontal slides -->
+  <div class="carousel" id="carousel">
+    <div class="slides-wrapper" id="slidesWrapper">
+
+      <!-- Slide 1: Reel (click opens modal) -->
+       <div class="slide slide-1" id="slide1">
+          <div class="play-icon">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="40" r="38" stroke="rgba(255,255,255,0.8)" stroke-width="2" fill="rgba(0,0,0,0.25)"/>
+              <polygon points="32,22 32,58 60,40" fill="white"/>
+            </svg>
+          </div>
+          <div class="slide-caption">
+            <span class="slide-title">Reel</span>
+            <span class="slide-subtitle">Showreel 2024</span>
+          </div>
+        </div>
+
+      <!-- Slide 2: YouTube autoplay, no controls -->
+      <div class="slide slide-2">
+          <iframe class="slide-video" id="slide2Video"
+            src=""
+            allow="autoplay; fullscreen" allowfullscreen>
+          </iframe>
+          <div class="slide-caption">
+            <span class="slide-title">Eras Tour</span>
+            <span class="slide-subtitle">Taylor swift</span>
+          </div>
+        </div>
+
+      <!-- Slide 3: NF Clouds -->
+       <div class="slide slide-3">
+          <div class="slide-caption">
+            <span class="slide-title">NF Clouds</span>
+            <span class="slide-subtitle"></span>
+          </div>
+        </div>
+      <div class="slide slide-4">
+          <div class="slide-caption">
+            <span class="slide-title">Spotify </span>
+            <span class="slide-subtitle">hit station</span>
+          </div>
+        </div>
+
+
+    </div>
+
+<!-- sliding button arrow left and right-->
+     <button class="arrow arrow-left hidden" id="arrowLeft">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(255,255,255,0.8)" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 6 9 12 15 18"></polyline>
+        </svg>
+      </button>
+      <button class="arrow arrow-right" id="arrowRight">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(255,255,255,0.8)" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 6 15 12 9 18"></polyline>
+        </svg>
+      </button>
+
+
+    <div class="dots" id="dots"></div>
+
+<!-- scroll arrow hint size-->
+       <div class="scroll-hint" id="scrollHint">
+        <span></span>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(255,255,255,0.6)" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+
+      </div>
+  </div>
+
+
+
+  <!-- Video modal (Reel) -->
+  <div id="videoModal">
+    <button id="modalClose">&#x2715;</button>
+    <iframe id="ytFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+
+
+
+
+
+
+
+  <!-- Gallery -->
+  <main class="gallery" id="gallery"></main>
+
+
+
+
+  <script>
+    // ---------- readiness gate ----------
+    let galleryReadyResolve;
+    const galleryReady = new Promise((resolve) => (galleryReadyResolve = resolve));
+
+    // ---------- Build gallery from JSON ----------
+    fetch('projects.json')
+      .then(r => r.json())
+      .then(async (data) => {
+        const gallery = document.getElementById('gallery');
+
+        data.forEach((project) => {
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+
+          const img = document.createElement('img');
+          img.src = project.image;
+          img.alt = project.title;
+          img.dataset.offset = project.offset || 0;
+
+          const overlay = document.createElement('div');
+          overlay.className = 'overlay';
+          overlay.innerHTML = `
+            <h2>${project.title}</h2>
+            <p style="margin: 0.5rem 0 1rem 0; font-size: var(--description-font-size); color: #ccc;">
+              ${project.description || ''}
+            </p>
+            <a href="${project.youtube}" target="_blank" rel="noopener noreferrer">${project.buttonText}</a>
+          `;
+          item.appendChild(img);
+          item.appendChild(overlay);
+          gallery.appendChild(item);
+        });
+
+        // Wait until images are decodable/paintable
+        const imgs = [...document.querySelectorAll('.gallery-item img')];
+        await Promise.all(
+          imgs.map((img) =>
+            (img.decode ? img.decode() : Promise.resolve()).catch(() => {
+              return new Promise((res) => {
+                if (img.complete) return res();
+                img.addEventListener('load', res, { once: true });
+                img.addEventListener('error', res, { once: true });
+              });
+            })
+          )
+        );
+
+        updateLayoutSizes();
+        applyParallax();
+
+        galleryReadyResolve();
+      })
+      .catch(err => {
+        console.error('Failed to load projects.json', err);
+        galleryReadyResolve();
+      });
+
+
+
+
+
+    // ---------- Parallax ----------
+    let ticking = false;
+    const parallaxFactor = 0.2;
+
+    function applyParallax() {
+      const images = document.querySelectorAll('.gallery-item img');
+      const windowHeight = window.innerHeight;
+
+      images.forEach((img) => {
+        const item = img.closest('.gallery-item');
+        const rect = item.getBoundingClientRect();
+        const center = rect.top + rect.height / 2 - windowHeight / 2;
+        const offset = parseFloat(img.dataset.offset || 0);
+        img.style.transform = `translate(-50%, calc(-50% + ${offset + center * -parallaxFactor}px))`;
+      });
+
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(applyParallax);
+        ticking = true;
+      }
+    });
+
+
+
+
+
+    // ---------- Responsive sizing ----------
+    function updateLayoutSizes() {
+      const aspect = window.innerWidth / window.innerHeight;
+
+      const baseTitle = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-title-size'));
+      const baseDesc  = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-description-size'));
+      const fontScale = aspect / 1.7;
+
+      document.documentElement.style.setProperty('--title-font-size', `${baseTitle * fontScale}rem`);
+      document.documentElement.style.setProperty('--description-font-size', `${baseDesc * fontScale}rem`);
+
+      const baseVisibleHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-visible-height'));
+      const heightScale = aspect / 1.7;
+      document.documentElement.style.setProperty('--visible-image-height', `${baseVisibleHeight * heightScale}px`);
+    }
+
+    window.addEventListener('resize', () => {
+      updateLayoutSizes();
+      applyParallax();
+    });
+    window.addEventListener('load', () => {
+      updateLayoutSizes();
+      applyParallax();
+    });
+
+
+
+
+
+    // ---------- Intro control (video) ---------- start
+    // (() => {
+    //   const intro = document.getElementById('intro');
+    //   const video = document.getElementById('introVideo');
+    //
+    //   const INTRO_MIN_MS = 1200;  // don't cut instantly
+    //   const INTRO_MAX_MS = 10000; // safety
+    //
+    //   document.documentElement.classList.add('intro-lock');
+    //   document.body.classList.add('intro-lock');
+    //
+    //   let endedResolve;
+    //   const videoEnded = new Promise((resolve) => (endedResolve = resolve));
+    //
+    //   // Resolve when video ends OR fails
+    //   video.addEventListener('ended', () => endedResolve(), { once: true });
+    //   video.addEventListener('error', () => endedResolve(), { once: true });
+    //
+    //   // In some browsers autoplay might be blocked; try play() safely
+    //   video.play().catch(() => {
+    //     // still allow flow; user can click to skip
+    //   });
+    //
+    //   function hideIntro() {
+    //     // Crossfade: show site first
+    //     document.body.classList.add('site-ready');
+    //
+    //     // next frame(s): fade intro out
+    //     requestAnimationFrame(() => {
+    //       requestAnimationFrame(() => {
+    //         intro.classList.add('intro-hide');
+    //
+    //         document.documentElement.classList.remove('intro-lock');
+    //         document.body.classList.remove('intro-lock');
+    //
+    //         setTimeout(() => intro.remove(), 900);
+    //       });
+    //     });
+    //   }
+    //
+    //   const minDelay = new Promise(res => setTimeout(res, INTRO_MIN_MS));
+    //   const maxDelay = new Promise(res => setTimeout(res, INTRO_MAX_MS));
+    //
+    //   // Hide when: (min time + gallery ready + video ended) OR max timeout
+    //   Promise.race([
+    //     Promise.all([minDelay, galleryReady, videoEnded]),
+    //     maxDelay
+    //   ]).then(hideIntro);
+    //
+    //   // Optional: click to skip
+    //   intro.addEventListener('click', hideIntro);
+    // })();
+// ---------- Intro control (video) ---------end
+
+
+
+
+
+
+
+
+// control banner section  -------start
+      (() => {
+      const banner = document.getElementById("float-banner");
+      const closeBtn = banner.querySelector(".float-banner__close");
+
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          banner.classList.add("show");
+        }, 600);
+      });
+
+      function closeBanner() {
+        banner.classList.remove("show");
+      }
+
+      closeBtn.addEventListener("click", closeBanner);
+    })();
+// control banner section  ----------end
+
+
+
+
+
+
+
+
+ // ---------- Carousel + Reel modal ----------
+  (() => {
+    const wrapper    = document.getElementById('slidesWrapper');
+    const btnLeft    = document.getElementById('arrowLeft');
+    const btnRight   = document.getElementById('arrowRight');
+    const dotsEl     = document.getElementById('dots');
+    const slide1     = document.getElementById('slide1');
+    const slide2Vid  = document.getElementById('slide2Video');
+    const modal      = document.getElementById('videoModal');
+    const modalClose = document.getElementById('modalClose');
+    const ytFrame    = document.getElementById('ytFrame');
+
+    const REEL_SRC   = 'https://www.youtube.com/embed/Z1UpU7yuO_U?autoplay=1&controls=1&vq=hd1080';
+    const SLIDE2_SRC = 'https://www.youtube.com/embed/Wb7lNjQLUk8?autoplay=1&mute=1&controls=0&loop=1&playlist=Wb7lNjQLUk8&rel=0';
+    const TOTAL      = 4;
+    let current      = 0;
+
+
+    for (let i = 0; i < TOTAL; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      dotsEl.appendChild(d);
+    }
+
+    function goTo(n) {
+      if (n < 0 || n >= TOTAL) return;
+      current = n;
+      wrapper.style.transform = `translateX(-${current * 100}vw)`;
+      btnLeft.classList.toggle('hidden', current === 0);
+      btnRight.classList.toggle('hidden', current === TOTAL - 1);
+      document.querySelectorAll('.dot').forEach((d, i) =>
+        d.classList.toggle('active', i === current)
+      );
+      slide2Vid.src = (current === 1) ? SLIDE2_SRC : '';
+    }
+
+    btnLeft.addEventListener('click',  () => goTo(current - 1));
+    btnRight.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (modal.classList.contains('open')) {
+        if (e.key === 'Escape') closeModal();
+        return;
+      }
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    let cursorTimer;
+
+    function resetCursorTimer() {
+      modal.style.cursor = '';
+      clearTimeout(cursorTimer);
+      cursorTimer = setTimeout(() => { modal.style.cursor = 'none'; }, 3000);
+    }
+
+    slide1.addEventListener('click', () => {
+      ytFrame.src = REEL_SRC;
+      modal.classList.add('open');
+      resetCursorTimer();
+    });
+
+    modal.addEventListener('mousemove', () => {
+      if (modal.classList.contains('open')) resetCursorTimer();
+    });
+
+    function closeModal() {
+      ytFrame.src = '';
+      modal.classList.remove('open');
+      modal.style.cursor = '';
+      clearTimeout(cursorTimer);
+    }
+
+    modalClose.addEventListener('click', closeModal);
+
+
+    // Scroll arrow hint
+      // Scroll hint — visible at top, hides when scrolled down, returns when back
+      const scrollHint = document.getElementById('scrollHint');
+      setTimeout(() => scrollHint.classList.add('visible'), 800);
+      window.addEventListener('scroll', () => {
+        if (window.scrollY < 50) {
+          scrollHint.classList.add('visible');
+        } else {
+          scrollHint.classList.remove('visible');
+        }
+      });
+
+  })();
+  </script>
+
+</body>
+
+</html>
