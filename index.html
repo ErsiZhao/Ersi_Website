@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="images/favicon.png" type="image/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ersi Zhao VFX/ML</title>
@@ -39,7 +40,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+        /*opacity and transition are fix BG image loading before the reel page*/
+        opacity: 0;
+        transition: opacity 0.4s ease;
     }
+
+
 
     .gallery-item {
       position: relative;
@@ -524,7 +530,7 @@ Floating Banner end
           </div>
           <div class="slide-caption">
             <span class="slide-title">Reel</span>
-            <span class="slide-subtitle">Showreel 2024</span>
+            <span class="slide-subtitle">Showreel</span>
           </div>
         </div>
 
@@ -657,8 +663,14 @@ Floating Banner end
           )
         );
 
+
         updateLayoutSizes();
         applyParallax();
+        // That way the gallery is invisible during the load/decode phase and fades in cleanly once everything is sized correctly.
+        document.getElementById('gallery').style.opacity = '1';  // ← add this line
+
+
+
 
         galleryReadyResolve();
       })
@@ -828,8 +840,8 @@ Floating Banner end
     const modalClose = document.getElementById('modalClose');
     const ytFrame    = document.getElementById('ytFrame');
 
-    const REEL_SRC   = 'https://www.youtube.com/embed/Z1UpU7yuO_U?autoplay=1&controls=1&vq=hd1080';
-    const SLIDE2_SRC = 'https://www.youtube.com/embed/Wb7lNjQLUk8?autoplay=1&mute=1&controls=0&loop=1&playlist=Wb7lNjQLUk8&rel=0';
+    const REEL_SRC   = 'https://www.youtube.com/embed/KzvXRyeoXCU?autoplay=1&controls=1&vq=hd2160';
+    const SLIDE2_SRC = 'https://www.youtube.com/embed/Wb7lNjQLUk8?autoplay=1&mute=1&controls=0&loop=1&playlist=Wb7lNjQLUk8&rel=0&playsinline=1';
     const TOTAL      = 4;
     let current      = 0;
 
