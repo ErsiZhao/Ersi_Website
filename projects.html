@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ersi Zhao</title>
+  <link rel="stylesheet" href="menu.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* ── Carousel ── */
+    .carousel {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .slides-wrapper {
+      display: flex;
+      height: 100vh;
+      transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .slide-title {
+      position: absolute;
+      bottom: 3.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /*here for horizontal sliding*/
+    /* Slide 1: clickable hero image */
+    .slide-1 {
+      background: url('images/landing_hero.jpg') center/cover no-repeat;
+      cursor: pointer;
+    }
+
+    .slide-2 {
+      background: url('images/7_clouds.png') center/cover no-repeat;
+    }
+
+    .slide-3 {
+      background: url('images/4_spotify_v03.png') center/cover no-repeat;
+    }
+    /*here is for vertical projects*/
+    .slide-era { background: url('images/era_tour.png') center/cover no-repeat; }
+
+    .slide-v-2 { background: url('images/7_clouds.png') center/cover no-repeat; }
+
+  .vertical-wrapper {
+    transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+  }
+
+  .h-row {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+    /* ── Arrows ── */
+    .arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: white;
+      font-size: 4rem;
+      cursor: pointer;
+      z-index: 500;
+      padding: 1rem 1.5rem;
+      opacity: 0.55;
+      transition: opacity 0.2s, transform 0.2s;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.15); }
+    .arrow-left  { left: 1rem; }
+    .arrow-right { right: 1rem; }
+    .arrow.hidden { visibility: hidden; pointer-events: none; }
+
+    /* ── Dots ── */
+    .dots {
+      position: fixed;
+      bottom: 1.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.6rem;
+      z-index: 500;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s;
+    }
+
+    .dot.active { background: rgba(255,255,255,0.9); }
+
+    /* ── Video modal ── */
+    #videoModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.96);
+      z-index: 3000;
+    }
+
+    #videoModal.open { display: block; }
+
+    /*#videoModal iframe {*/
+    /*  position: absolute;*/
+    /*  top: 50%;*/
+    /*  left: 50%;*/
+    /*  transform: translate(-50%, -50%);*/
+    /*  width: 100vw;*/
+    /*  height: 56.25vw;*/
+    /*  min-height: 100vh;*/
+    /*  min-width: 177.78vh;*/
+    /*  border: none;*/
+    /*}*/
+
+    #videoModal iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100vw, 177.78vh);
+    height: min(100vh, 56.25vw);
+    border: none;
+  }
+
+    #modalClose {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2.8rem;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 3001;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    #modalClose:hover { opacity: 1; }
+
+    html.menu-open, body.menu-open { overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div id="menu-host"></div>
+  <script src="menu.js"></script>
+
+
+<!--&lt;!&ndash;old sliding&ndash;&gt;-->
+<!--  <div class="carousel">-->
+<!--    <div class="slides-wrapper" id="slidesWrapper">-->
+
+<!--      &lt;!&ndash; Slide 1: clickable hero → opens video modal &ndash;&gt;-->
+<!--      <div class="slide slide-1" id="slide1">-->
+<!--        <div class="slide-title">Reel</div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Slide 2: Image &ndash;&gt;-->
+<!--      <div class="slide slide-2">-->
+<!--        <div class="slide-title">NF Clouds</div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Slide 3: Image &ndash;&gt;-->
+<!--      <div class="slide slide-3">-->
+<!--        <div class="slide-title">Spotify Hit Station</div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--    <button class="arrow arrow-left hidden" id="arrowLeft">&#8592;</button>-->
+<!--    <button class="arrow arrow-right"       id="arrowRight">&#8594;</button>-->
+
+<!--    <div class="dots" id="dots"></div>-->
+<!--  </div>-->
+
+   <div class="carousel">
+      <div class="vertical-wrapper" id="verticalWrapper">
+
+        <!-- Row 0: horizontal slides -->
+        <div class="h-row">
+          <div class="slides-wrapper" id="slidesWrapper">
+            <div class="slide slide-1" id="slide1">
+              <div class="slide-title">Reel</div>
+            </div>
+            <div class="slide slide-2">
+              <div class="slide-title">NF Clouds</div>
+            </div>
+            <div class="slide slide-3">
+              <div class="slide-title">Spotify Hit Station</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 1: Era Tour (scroll down to reach) -->
+        <div class="slide slide-era">
+          <div class="slide-title">Era Tour</div>
+        </div>
+          <!-- Row 1: Era Tour (scroll down to reach) -->
+        <div class="slide slide-v-2">
+          <div class="slide-title">Era Tour</div>
+        </div>
+      </div>
+
+      <button class="arrow arrow-left hidden" id="arrowLeft">&#8592;</button>
+      <button class="arrow arrow-right"       id="arrowRight">&#8594;</button>
+
+      <div class="dots" id="dots"></div>
+    </div>
+
+
+
+  <!-- Video modal -->
+  <div id="videoModal">
+    <button id="modalClose">&#x2715;</button>
+    <iframe id="ytFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+
+   <script>
+      const wrapper    = document.getElementById('slidesWrapper');
+      const vWrapper   = document.getElementById('verticalWrapper');
+      const btnLeft    = document.getElementById('arrowLeft');
+      const btnRight   = document.getElementById('arrowRight');
+      const dotsEl     = document.getElementById('dots');
+      const slide1     = document.getElementById('slide1');
+      const modal      = document.getElementById('videoModal');
+      const modalClose = document.getElementById('modalClose');
+      const ytFrame    = document.getElementById('ytFrame');
+
+      const YT_SRC = 'https://www.youtube.com/embed/Z1UpU7yuO_U?autoplay=1&controls=1&vq=hd1080';
+      const TOTAL  = 3;
+      let current    = 0;
+      let currentRow = 0;
+      let scrollLocked = false;
+
+      // Build dots
+      for (let i = 0; i < TOTAL; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsEl.appendChild(d);
+      }
+
+      function updateUI() {
+        if (currentRow === 1) {
+          btnLeft.classList.add('hidden');
+          btnRight.classList.add('hidden');
+          dotsEl.style.display = 'none';
+        } else {
+          dotsEl.style.display = 'flex';
+          btnLeft.classList.toggle('hidden', current === 0);
+          btnRight.classList.toggle('hidden', current === TOTAL - 1);
+        }
+      }
+
+      function goTo(n) {
+        if (n < 0 || n >= TOTAL) return;
+        current = n;
+        wrapper.style.transform = `translateX(-${current * 100}vw)`;
+        document.querySelectorAll('.dot').forEach((d, i) =>
+          d.classList.toggle('active', i === current)
+        );
+        updateUI();
+      }
+
+      function goToRow(r) {
+        currentRow = r;
+        vWrapper.style.transform = `translateY(-${currentRow * 100}vh)`;
+        updateUI();
+      }
+
+      btnLeft.addEventListener('click',  () => goTo(current - 1));
+      btnRight.addEventListener('click', () => goTo(current + 1));
+
+      document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('open')) {
+          if (e.key === 'Escape') closeModal();
+          return;
+        }
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+        if (e.key === 'ArrowDown' && currentRow === 0) goToRow(1);
+        if (e.key === 'ArrowUp'   && currentRow === 1) goToRow(0);
+      });
+
+      // Scroll wheel — vertical navigation
+      document.addEventListener('wheel', (e) => {
+        if (modal.classList.contains('open') || scrollLocked) return;
+        if (e.deltaY > 0 && currentRow === 0) {
+          scrollLocked = true;
+          goToRow(1);
+          setTimeout(() => { scrollLocked = false; }, 900);
+        } else if (e.deltaY < 0 && currentRow === 1) {
+          scrollLocked = true;
+          goToRow(0);
+          setTimeout(() => { scrollLocked = false; }, 900);
+        }
+      }, { passive: true });
+
+      // Open modal on slide 1 click
+      slide1.addEventListener('click', () => {
+        ytFrame.src = YT_SRC;
+        modal.classList.add('open');
+        resetCursorTimer();
+      });
+
+      // Cursor auto-hide in modal
+      let cursorTimer;
+
+      function resetCursorTimer() {
+        modal.style.cursor = '';
+        clearTimeout(cursorTimer);
+        cursorTimer = setTimeout(() => { modal.style.cursor = 'none'; }, 3000);
+      }
+
+      modal.addEventListener('mousemove', () => {
+        if (modal.classList.contains('open')) resetCursorTimer();
+      });
+
+      function closeModal() {
+        ytFrame.src = '';
+        modal.classList.remove('open');
+        modal.style.cursor = '';
+        clearTimeout(cursorTimer);
+      }
+
+      modalClose.addEventListener('click', closeModal);
+    </script>
+
+<!--  <script>-->
+<!--    const wrapper    = document.getElementById('slidesWrapper');-->
+<!--    const btnLeft    = document.getElementById('arrowLeft');-->
+<!--    const btnRight   = document.getElementById('arrowRight');-->
+<!--    const dotsEl     = document.getElementById('dots');-->
+<!--    const slide1     = document.getElementById('slide1');-->
+<!--    const modal      = document.getElementById('videoModal');-->
+<!--    const modalClose = document.getElementById('modalClose');-->
+<!--    const ytFrame    = document.getElementById('ytFrame');-->
+
+<!--    const YT_SRC = 'https://www.youtube.com/embed/pgTnrEHwPOQ?autoplay=1&controls=1';-->
+<!--    const TOTAL  = 3;-->
+<!--    let current  = 0;-->
+<!--// https://youtu.be/pgTnrEHwPOQ-->
+<!--    // Build dots-->
+<!--    for (let i = 0; i < TOTAL; i++) {-->
+<!--      const d = document.createElement('div');-->
+<!--      d.className = 'dot' + (i === 0 ? ' active' : '');-->
+<!--      dotsEl.appendChild(d);-->
+<!--    }-->
+
+<!--    function goTo(n) {-->
+<!--      if (n < 0 || n >= TOTAL) return;-->
+<!--      current = n;-->
+<!--      wrapper.style.transform = `translateX(-${current * 100}vw)`;-->
+<!--      btnLeft.classList.toggle('hidden', current === 0);-->
+<!--      btnRight.classList.toggle('hidden', current === TOTAL - 1);-->
+<!--      document.querySelectorAll('.dot').forEach((d, i) =>-->
+<!--        d.classList.toggle('active', i === current)-->
+<!--      );-->
+<!--    }-->
+
+<!--    btnLeft.addEventListener('click',  () => goTo(current - 1));-->
+<!--    btnRight.addEventListener('click', () => goTo(current + 1));-->
+
+<!--    document.addEventListener('keydown', (e) => {-->
+<!--      if (modal.classList.contains('open')) {-->
+<!--        if (e.key === 'Escape') closeModal();-->
+<!--        return;-->
+<!--      }-->
+<!--      if (e.key === 'ArrowLeft')  goTo(current - 1);-->
+<!--      if (e.key === 'ArrowRight') goTo(current + 1);-->
+<!--    });-->
+
+<!--    // Open modal on slide 1 click-->
+<!--    slide1.addEventListener('click', () => {-->
+<!--      ytFrame.src = YT_SRC;-->
+<!--      modal.classList.add('open');-->
+<!--    });-->
+
+<!--    function closeModal() {-->
+<!--      ytFrame.src = '';-->
+<!--      modal.classList.remove('open');-->
+<!--    }-->
+
+<!--    modalClose.addEventListener('click', closeModal);-->
+<!--  </script>-->
+</body>
+</html>
