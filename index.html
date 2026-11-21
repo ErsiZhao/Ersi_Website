@@ -242,7 +242,9 @@
 
 
     /* The bottom stack, measured up from the safe area:
-         scroll cue  ->  indicator  ->  swipe cue (touch)  ->  title  */
+         scroll cue  ->  indicator  ->  swipe cue (touch)  ->  title
+       Touch gets taller offsets so nothing sits under the mobile browser bar
+       while it is showing on first load. */
     .slide-caption {
       position: absolute;
       bottom: calc(var(--nav-bottom) + var(--caption-gap));
@@ -337,7 +339,8 @@
 
   /* ── Slide indicator (horizontal position) ──
      Segments rather than circles: a row of bars along a track reads as
-     "position in a sequence", which is what horizontal paging is. */
+     "position in a sequence", which is what horizontal paging is. The active
+     one widens and takes the site's gold accent. */
   .dots {
     position: absolute;
     bottom: var(--nav-bottom);
@@ -372,9 +375,9 @@
   }
 
   /* ── Horizontal cue ──
-     Only shown where the arrows are hidden, i.e. touch devices. Sits between
-     the segments and the title, grouped with them, since all three describe
-     horizontal movement. */
+     Only shown where the arrows are hidden, i.e. touch devices. */
+  /* Sits between the segments and the title — grouped with them, since all
+     three describe horizontal movement. */
   .swipe-hint {
     position: absolute;
     bottom: calc(var(--nav-bottom) + 2rem);
@@ -565,13 +568,59 @@
     .reel-bar  { gap: 10px; }
   }
 
-  /* iPhone hands playback to Apple's fullscreen player, which brings its own
-     scrubber — so ours would be redundant. Pointer events go back to the
-     iframe there, so YouTube's own play button stays tappable if iOS ever
-     refuses our programmatic play. */
-  #videoModal.native-fs .reel-bar,
-  #videoModal.native-fs #reelClickCatch { display: none; }
-  #videoModal.native-fs #reelVideoWrap  { pointer-events: auto; }
+  .reel-fs {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.9);
+    cursor: pointer;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .reel-fs:hover { background: rgba(255,255,255,0.18); }
+
+  /* ── Pseudo-fullscreen (iPhone) ──
+     iPhone Safari offers the Fullscreen API only for native <video> elements,
+     never for an iframe, so a YouTube embed cannot be put into real fullscreen
+     there. Instead rotate the whole stage a quarter turn and size it to the
+     viewport's long edge: the result fills the screen horizontally once the
+     phone is turned. Only applied in portrait — in landscape the layout is
+     already the right way round and rotating would double up. */
+  #reelStage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;   /* clips the oversized player in portrait */
+  }
+
+  /* Portrait deliberately fits rather than fills. Cover-cropping a 16:9 frame
+     into a tall phone screen magnifies the centre ~4x, and since YouTube picks
+     its stream from the player's CSS size, that magnification is what made the
+     reel look soft: ~500 source pixels stretched over ~1180 physical ones.
+     Fitting keeps every pixel YouTube sends; landscape is the way to go bigger. */
+
+  @media (orientation: portrait) {
+    #videoModal.pseudo-fs #reelStage {
+      inset: auto;
+      top: 50%;
+      left: 50%;
+      width: 100vh;
+      height: 100vw;
+      transform: translate(-50%, -50%) rotate(90deg);
+      transform-origin: center;
+    }
+
+    /* vw/vh swap roles inside the rotated stage */
+    #videoModal.pseudo-fs #reelVideoWrap {
+      width: min(100vh, 177.78vw);
+      height: min(100vw, 56.25vh);
+    }
+  }
 
 
 
@@ -766,18 +815,27 @@
   <!-- Video modal (Reel) -->
   <div id="videoModal">
     <button id="modalClose" aria-label="Close video">&#x2715;</button>
-    <div id="reelVideoWrap">
-      <div id="reelVideo"></div>
-    </div>
-    <!-- Tap/click target for pause-resume, so clicks never reach the iframe -->
-    <div id="reelClickCatch"></div>
-    <!-- Our own scrub bar (hidden on iPhone, which uses the native player) -->
-    <div class="reel-bar" id="reelBar">
-      <div class="reel-track" id="reelTrack">
-        <div class="reel-rail"></div>
-        <div class="reel-fill" id="reelFill"></div>
+    <!-- Stage holds player + controls together so fullscreen can rotate both -->
+    <div id="reelStage">
+      <div id="reelVideoWrap">
+        <div id="reelVideo"></div>
       </div>
-      <span class="reel-time" id="reelTime">0:00 / 0:00</span>
+      <!-- Tap/click target for pause-resume, so clicks never reach the iframe -->
+      <div id="reelClickCatch"></div>
+      <div class="reel-bar" id="reelBar">
+        <div class="reel-track" id="reelTrack">
+          <div class="reel-rail"></div>
+          <div class="reel-fill" id="reelFill"></div>
+        </div>
+        <span class="reel-time" id="reelTime">0:00 / 0:00</span>
+        <button class="reel-fs" id="reelFs" aria-label="Fullscreen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1084,18 +1142,47 @@
     }, { passive: true });
 
     // ---------- Reel modal ----------
-    // iPhone gets Apple's native fullscreen player (one scrubber, nothing else).
-    // Everywhere else the player runs bare and we draw the scrub bar ourselves,
+    // The player runs bare (controls:0) and we draw the scrub bar ourselves,
     // because YouTube's control bar cannot be partially suppressed.
-    const IS_IPHONE = /iPhone|iPod/.test(navigator.userAgent);
-
     const reelBar   = document.getElementById('reelBar');
     const reelTrack = document.getElementById('reelTrack');
     const reelFill  = document.getElementById('reelFill');
     const reelTime  = document.getElementById('reelTime');
     const reelCatch = document.getElementById('reelClickCatch');
+    const reelFs    = document.getElementById('reelFs');
 
-    if (IS_IPHONE) modal.classList.add('native-fs');
+    // ---------- Fullscreen ----------
+    // Real fullscreen where the API exists (desktop, Android, iPad). iPhone
+    // Safari exposes it only for native <video>, never an iframe, so there we
+    // fall back to rotating the stage to fill the screen instead.
+    function fsElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function toggleFullscreen() {
+      if (fsElement()) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) exit.call(document);
+        return;
+      }
+      if (modal.classList.contains('pseudo-fs')) {
+        modal.classList.remove('pseudo-fs');
+        return;
+      }
+      const req = modal.requestFullscreen || modal.webkitRequestFullscreen;
+      if (req) {
+        const p = req.call(modal);
+        if (p && p.catch) p.catch(() => modal.classList.add('pseudo-fs'));
+      } else {
+        modal.classList.add('pseudo-fs');
+      }
+    }
+
+    reelFs.addEventListener('click', (e) => {
+      e.stopPropagation();   // don't let the click-catcher also toggle pause
+      toggleFullscreen();
+      resetCursorTimer();
+    });
 
     let cursorTimer;
     const BAR_HIDE_MS = 1000;   // bar and cursor fade this long after any input
@@ -1125,7 +1212,7 @@
     let scrubbing = false;
 
     function startReelTick() {
-      if (reelTick || IS_IPHONE) return;
+      if (reelTick) return;
       reelTick = setInterval(() => {
         if (!reelPlayer || scrubbing) return;
         let t = 0, d = 0;
@@ -1212,6 +1299,12 @@
     function closeModal() {
       stopReelTick();
       scrubbing = false;
+      // Leave fullscreen with the modal, by either route
+      if (fsElement()) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) try { exit.call(document); } catch (_) {}
+      }
+      modal.classList.remove('pseudo-fs');
       if (reelPlayer) {
         reelPlayer.pauseVideo();
         reelPlayer.seekTo(0, true);
@@ -1249,16 +1342,25 @@
     window.onYouTubeIframeAPIReady = () => {
       reelPlayer = new YT.Player('reelVideo', {
         videoId: REEL_ID,
-        playerVars: Object.assign({
-          autoplay: 0, controls: 0, rel: 0,
+        playerVars: {
+          // playsinline everywhere now: the reel plays in place, in portrait,
+          // and going landscape is an explicit choice via the fullscreen button
+          // rather than something iOS forces at the first frame.
+          autoplay: 0, controls: 0, rel: 0, playsinline: 1,
           modestbranding: 1, iv_load_policy: 3
-        // Leaving playsinline off on iPhone is what makes iOS take playback
-        // into its own fullscreen player. Everywhere else we want it inline.
-        }, IS_IPHONE ? {} : { playsinline: 1 }),
+        },
         events: {
+          // A hint only — YouTube deprecated quality control and decides for
+          // itself from player size and bandwidth. Costs nothing to ask.
+          onReady: (e) => {
+            try { e.target.setPlaybackQuality('hd1080'); } catch (_) {}
+          },
           onStateChange: (e) => {
-            if (e.data === YT.PlayerState.PLAYING) startReelTick();
-            if (e.data === YT.PlayerState.PAUSED)  stopReelTick();
+            if (e.data === YT.PlayerState.PLAYING) {
+              try { e.target.setPlaybackQuality('hd1080'); } catch (_) {}
+              startReelTick();
+            }
+            if (e.data === YT.PlayerState.PAUSED) stopReelTick();
           }
         }
       });
