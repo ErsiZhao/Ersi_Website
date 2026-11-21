@@ -5,6 +5,9 @@ videos/*
 !videos/mocap_01.mp4
 # Web-encoded hero loop — small on purpose, and the homepage needs it
 !videos/era_hero.mp4
+# Web-encoded showreel. Only the variant the page references is tracked;
+# the other resolution stays local as an option.
+!videos/reel_1080.mp4
 
 # Local tooling / editor state
 .venv/

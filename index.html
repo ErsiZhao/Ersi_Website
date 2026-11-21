@@ -425,32 +425,23 @@
 
   #videoModal.open { display: block; }
 
-  /* YouTube draws the title, channel, Share and Watch-later strip anchored to
-     the top edge of the player for the first few seconds of playback, and no
-     embed parameter disables it. So we make the iframe taller than the 16:9
-     window by --yt-bleed top and bottom. The video letterboxes to the full
-     width either way, so those extra bands are black bars — the overlay lands
-     on the top band, and the wrapper's overflow clips it off. The picture
-     itself is never cropped. */
+  /* Self-hosted reel. A native <video> has no chrome to clip or out-time, and
+     object-fit handles every aspect ratio, so none of the iframe geometry
+     (bleed, overscan, min/max sizing) is needed any more. */
   #reelVideoWrap {
-    --yt-bleed: 90px;
+    position: absolute;
+    inset: 0;
+  }
+
+  #reelVideo {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(100vw, 177.78vh);
-    height: min(100vh, 56.25vw);
-    overflow: hidden;
-  }
-
-  #reelVideoWrap iframe {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
     width: 100%;
-    height: calc(100% + 2 * var(--yt-bleed));
-    border: none;
+    height: 100%;
+    object-fit: contain;   /* letterbox, never crop the frame */
+    background: #000;
     display: block;
   }
 
@@ -585,41 +576,13 @@
 
   .reel-fs:hover { background: rgba(255,255,255,0.18); }
 
-  /* ── Pseudo-fullscreen (iPhone) ──
-     iPhone Safari offers the Fullscreen API only for native <video> elements,
-     never for an iframe, so a YouTube embed cannot be put into real fullscreen
-     there. Instead rotate the whole stage a quarter turn and size it to the
-     viewport's long edge: the result fills the screen horizontally once the
-     phone is turned. Only applied in portrait — in landscape the layout is
-     already the right way round and rotating would double up. */
+  /* The rotate-and-fill fallback is gone: a self-hosted <video> can enter real
+     fullscreen on iPhone via webkitEnterFullscreen(), which hands off to the
+     system player and actually hides the browser bars. The CSS workaround only
+     ever produced a full-bleed layout underneath Safari's chrome. */
   #reelStage {
     position: absolute;
     inset: 0;
-    overflow: hidden;   /* clips the oversized player in portrait */
-  }
-
-  /* Portrait deliberately fits rather than fills. Cover-cropping a 16:9 frame
-     into a tall phone screen magnifies the centre ~4x, and since YouTube picks
-     its stream from the player's CSS size, that magnification is what made the
-     reel look soft: ~500 source pixels stretched over ~1180 physical ones.
-     Fitting keeps every pixel YouTube sends; landscape is the way to go bigger. */
-
-  @media (orientation: portrait) {
-    #videoModal.pseudo-fs #reelStage {
-      inset: auto;
-      top: 50%;
-      left: 50%;
-      width: 100vh;
-      height: 100vw;
-      transform: translate(-50%, -50%) rotate(90deg);
-      transform-origin: center;
-    }
-
-    /* vw/vh swap roles inside the rotated stage */
-    #videoModal.pseudo-fs #reelVideoWrap {
-      width: min(100vh, 177.78vw);
-      height: min(100vw, 56.25vh);
-    }
   }
 
 
@@ -818,7 +781,8 @@
     <!-- Stage holds player + controls together so fullscreen can rotate both -->
     <div id="reelStage">
       <div id="reelVideoWrap">
-        <div id="reelVideo"></div>
+        <video id="reelVideo" src="videos/reel_1080.mp4"
+               playsinline preload="metadata"></video>
       </div>
       <!-- Tap/click target for pause-resume, so clicks never reach the iframe -->
       <div id="reelClickCatch"></div>
@@ -1058,11 +1022,9 @@
     const modal      = document.getElementById('videoModal');
     const modalClose = document.getElementById('modalClose');
 
-    const REEL_ID = 'KzvXRyeoXCU';
     const TOTAL   = 4;
 
     let current = 0;
-    let reelPlayer = null;
 
     // ---------- Slide navigation ----------
     for (let i = 0; i < TOTAL; i++) {
@@ -1095,13 +1057,10 @@
     document.addEventListener('keydown', (e) => {
       if (modal.classList.contains('open')) {
         if (e.key === 'Escape') closeModal();
-        if (e.key === ' ' && reelPlayer) {
+        if (e.key === ' ') {
           e.preventDefault();
-          try {
-            const st = reelPlayer.getPlayerState();
-            if (st === YT.PlayerState.PLAYING) reelPlayer.pauseVideo();
-            else reelPlayer.playVideo();
-          } catch (_) { /* player not ready */ }
+          if (reelVideo.paused) reelVideo.play().catch(() => {});
+          else                  reelVideo.pause();
           resetCursorTimer();
         }
         return;
@@ -1142,8 +1101,9 @@
     }, { passive: true });
 
     // ---------- Reel modal ----------
-    // The player runs bare (controls:0) and we draw the scrub bar ourselves,
-    // because YouTube's control bar cannot be partially suppressed.
+    // Self-hosted <video>, so the UI is entirely ours: no chrome to suppress
+    // and real fullscreen available on every platform including iPhone.
+    const reelVideo = document.getElementById('reelVideo');
     const reelBar   = document.getElementById('reelBar');
     const reelTrack = document.getElementById('reelTrack');
     const reelFill  = document.getElementById('reelFill');
@@ -1152,11 +1112,31 @@
     const reelFs    = document.getElementById('reelFs');
 
     // ---------- Fullscreen ----------
-    // Real fullscreen where the API exists (desktop, Android, iPad). iPhone
-    // Safari exposes it only for native <video>, never an iframe, so there we
-    // fall back to rotating the stage to fill the screen instead.
+    // Standard API on desktop/Android/iPad. iPhone Safari offers no element
+    // fullscreen, but it DOES give native <video> webkitEnterFullscreen() —
+    // which hands off to the system player and genuinely hides the browser
+    // bars, the one thing the old CSS rotate-and-fill could never do.
     function fsElement() {
       return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function enterFullscreen() {
+      const req = reelVideo.requestFullscreen || reelVideo.webkitRequestFullscreen;
+      if (req) {
+        const p = req.call(reelVideo);
+        if (p && p.catch) p.catch(() => iosFullscreen());
+        return;
+      }
+      iosFullscreen();
+    }
+
+    function iosFullscreen() {
+      if (typeof reelVideo.webkitEnterFullscreen === 'function') {
+        // Needs loaded metadata; if it isn't ready yet, wait for it once.
+        if (reelVideo.readyState >= 1) reelVideo.webkitEnterFullscreen();
+        else reelVideo.addEventListener('loadedmetadata',
+               () => reelVideo.webkitEnterFullscreen(), { once: true });
+      }
     }
 
     function toggleFullscreen() {
@@ -1165,17 +1145,7 @@
         if (exit) exit.call(document);
         return;
       }
-      if (modal.classList.contains('pseudo-fs')) {
-        modal.classList.remove('pseudo-fs');
-        return;
-      }
-      const req = modal.requestFullscreen || modal.webkitRequestFullscreen;
-      if (req) {
-        const p = req.call(modal);
-        if (p && p.catch) p.catch(() => modal.classList.add('pseudo-fs'));
-      } else {
-        modal.classList.add('pseudo-fs');
-      }
+      enterFullscreen();
     }
 
     reelFs.addEventListener('click', (e) => {
@@ -1214,23 +1184,10 @@
     function startReelTick() {
       if (reelTick) return;
       reelTick = setInterval(() => {
-        if (!reelPlayer || scrubbing) return;
-        let t = 0, d = 0;
-        try {
-          t = reelPlayer.getCurrentTime() || 0;
-          d = reelPlayer.getDuration() || 0;
-        } catch (_) { return; }
-        if (d <= 0) return;
-
-        // Stop just shy of the end so YouTube never paints its end screen
-        // (replay button plus suggested videos) over the last frame.
-        if (t >= d - 0.4) {
-          reelPlayer.pauseVideo();
-          reelPlayer.seekTo(0, true);
-          paint(0, d);
-          return;
-        }
-        paint(t, d);
+        if (scrubbing) return;
+        const d = reelVideo.duration || 0;
+        if (!d || !isFinite(d)) return;
+        paint(reelVideo.currentTime || 0, d);
       }, 200);
     }
 
@@ -1239,14 +1196,23 @@
       reelTick = null;
     }
 
+    // Native end-of-video needs no special handling — there is no end screen
+    // to pre-empt. Just rewind and park on the first frame.
+    reelVideo.addEventListener('ended', () => {
+      reelVideo.currentTime = 0;
+      paint(0, reelVideo.duration || 0);
+    });
+
+    reelVideo.addEventListener('loadedmetadata', () => {
+      paint(reelVideo.currentTime || 0, reelVideo.duration || 0);
+    });
+
     function seekFromPointer(e) {
-      if (!reelPlayer) return;
+      const d = reelVideo.duration || 0;
+      if (!d || !isFinite(d)) return;
       const r = reelTrack.getBoundingClientRect();
       const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-      let d = 0;
-      try { d = reelPlayer.getDuration() || 0; } catch (_) { return; }
-      if (!d) return;
-      reelPlayer.seekTo(frac * d, true);
+      reelVideo.currentTime = frac * d;
       paint(frac * d, d);
     }
 
@@ -1262,12 +1228,8 @@
 
     // Click/tap the picture to pause or resume
     reelCatch.addEventListener('click', () => {
-      if (!reelPlayer) return;
-      try {
-        const st = reelPlayer.getPlayerState();
-        if (st === YT.PlayerState.PLAYING) reelPlayer.pauseVideo();
-        else reelPlayer.playVideo();
-      } catch (_) { /* player not ready */ }
+      if (reelVideo.paused) reelVideo.play().catch(() => {});
+      else                  reelVideo.pause();
       resetCursorTimer();
     });
 
@@ -1280,9 +1242,9 @@
       modal.classList.add('open');
       document.documentElement.classList.add('modal-open');
       document.body.classList.add('modal-open');
-      // playVideo() fires synchronously inside the tap handler so the user
-      // gesture still counts — that is what avoids a second tap on iOS.
-      if (reelPlayer) reelPlayer.playVideo();
+      // play() fires synchronously inside the tap handler so the user gesture
+      // still counts — that is what avoids a second tap on iOS.
+      reelVideo.play().catch(() => {});
       startReelTick();
       resetCursorTimer();
     }
@@ -1304,12 +1266,9 @@
         const exit = document.exitFullscreen || document.webkitExitFullscreen;
         if (exit) try { exit.call(document); } catch (_) {}
       }
-      modal.classList.remove('pseudo-fs');
-      if (reelPlayer) {
-        reelPlayer.pauseVideo();
-        reelPlayer.seekTo(0, true);
-      }
-      paint(0, 0);
+      reelVideo.pause();
+      reelVideo.currentTime = 0;
+      paint(0, reelVideo.duration || 0);
       modal.classList.remove('open');
       document.documentElement.classList.remove('modal-open');
       document.body.classList.remove('modal-open');
@@ -1338,37 +1297,10 @@
     document.addEventListener('touchstart', nudgeEraVideo, { once: true, passive: true });
     document.addEventListener('click',      nudgeEraVideo, { once: true });
 
-    // ---------- YouTube IFrame API (reel only) ----------
-    window.onYouTubeIframeAPIReady = () => {
-      reelPlayer = new YT.Player('reelVideo', {
-        videoId: REEL_ID,
-        playerVars: {
-          // playsinline everywhere now: the reel plays in place, in portrait,
-          // and going landscape is an explicit choice via the fullscreen button
-          // rather than something iOS forces at the first frame.
-          autoplay: 0, controls: 0, rel: 0, playsinline: 1,
-          modestbranding: 1, iv_load_policy: 3
-        },
-        events: {
-          // A hint only — YouTube deprecated quality control and decides for
-          // itself from player size and bandwidth. Costs nothing to ask.
-          onReady: (e) => {
-            try { e.target.setPlaybackQuality('hd1080'); } catch (_) {}
-          },
-          onStateChange: (e) => {
-            if (e.data === YT.PlayerState.PLAYING) {
-              try { e.target.setPlaybackQuality('hd1080'); } catch (_) {}
-              startReelTick();
-            }
-            if (e.data === YT.PlayerState.PAUSED) stopReelTick();
-          }
-        }
-      });
-    };
-
-    const api = document.createElement('script');
-    api.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(api);
+    // The YouTube IFrame API is gone entirely — both videos are now native
+    // elements, so the page loads no third-party player script at all.
+    reelVideo.addEventListener('play',  startReelTick);
+    reelVideo.addEventListener('pause', stopReelTick);
 
     // ---------- Scroll hint ----------
     // Visible at top, hides when scrolled down, returns when back
