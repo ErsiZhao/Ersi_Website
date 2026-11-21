@@ -1,0 +1,15 @@
+# Video masters live locally only — far too large for the repo and for
+# GitHub Pages. The two below are already tracked and stay tracked.
+videos/*
+!videos/intro.mp4
+!videos/mocap_01.mp4
+
+# Local tooling / editor state
+.venv/
+.idea/
+.codegraph/
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store

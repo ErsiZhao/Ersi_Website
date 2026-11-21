@@ -3,32 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IMDB - Ersi Zhao</title>
+  <title>IMDb — Ersi Zhao</title>
+  <link rel="icon" href="images/favicon.png" type="image/png">
+
+  <meta name="description" content="IMDb filmography for Ersi (Ethan) Zhao — VFX compositing supervisor and real-time supervisor, with credits across feature films, television, and music video." />
+  <meta name="author" content="Ersi Zhao" />
+  <link rel="canonical" href="https://ersistant.com/imdb.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ersi Zhao" />
+  <meta property="og:url" content="https://ersistant.com/imdb.html" />
+  <meta property="og:title" content="IMDb — Ersi Zhao" />
+  <meta property="og:description" content="Full filmography for Ersi (Ethan) Zhao, VFX compositing and real-time supervisor." />
+  <meta property="og:image" content="https://ersistant.com/images/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="IMDb — Ersi Zhao" />
+  <meta name="twitter:description" content="Full filmography for Ersi (Ethan) Zhao, VFX compositing and real-time supervisor." />
+  <meta name="twitter:image" content="https://ersistant.com/images/og-image.jpg" />
+
+  <!-- Shared dropdown menu styles -->
+  <link rel="stylesheet" href="menu.css">
+
   <style>
+    /* Override menu.css's site-wide background for this page */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #000 url('images/contact_page/Screen+Shot+2018-03-11+at+11.07.02+AM.png') center center / cover no-repeat fixed;
+      background: #000 url('images/contact_page/Screen+Shot+2018-03-11+at+11.07.02+AM.png')
+        center center / cover no-repeat fixed;
       color: #fff;
-    }
-
-    header {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      background-color: #000;
-      padding: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    header a {
-      color: white;
-      text-decoration: none;
-      margin: 0.5rem 1rem;
-      font-size: 1rem;
-      text-transform: uppercase;
+      box-sizing: border-box;
     }
 
     .content {
@@ -42,37 +48,43 @@
 
     h1 {
       font-size: 2rem;
+      margin-top: 0;
+    }
+
+    p {
+      line-height: 1.6;
+      color: #ccc;
     }
 
     a.button {
       display: inline-block;
       margin-top: 2rem;
       padding: 1rem 2rem;
-      background-color: #ff4d4d;
-      color: #fff;
+      background-color: #f5c518; /* IMDb yellow */
+      color: #000;
       text-decoration: none;
       font-size: 1.1rem;
+      font-weight: bold;
       border-radius: 8px;
+      transition: opacity 0.2s;
     }
+
+    a.button:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
-  <header>
-<!--    <a href="nuke.html">nuke</a>-->
-<!--    <a href="ue5.html">ue5</a>-->
-<!--    <a href="unreal-projects.html">unreal engine projects</a>-->
-<!--    <a href="houdini.html">houdini</a>-->
-<!--    <a href="python_land.html">python_land</a>-->
-    <a href="index_only_slider_no_other_projects.html">recent work</a>
-    <a href="contact.html">contact</a>
-    <a href="imdb.html">imdb</a>
-<!--    <a href="interviews.html">interviews</a>-->
-  </header>
+  <!-- Shared dropdown menu gets injected here -->
+  <div id="menu-host"></div>
+  <script src="menu.js"></script>
 
   <div class="content">
-    <h1>Visit Ethan Zhao's IMDB Page</h1>
-    <a class="button" href="https://www.imdb.com/name/nm6027003/?ref_=nv_sr_srsg_0_tt_2_nm_6_in_0_q_Ethan%2520zhao" target="_blank">
-      Go to IMDB Profile
+    <h1>Ethan Zhao on IMDb</h1>
+    <p>
+      Full filmography — feature film, television, and music video credits
+      as VFX compositing supervisor and real-time supervisor.
+    </p>
+    <a class="button" href="https://www.imdb.com/name/nm6027003/" target="_blank" rel="noopener noreferrer">
+      View IMDb Profile
     </a>
   </div>
 </body>

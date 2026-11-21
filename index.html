@@ -4,7 +4,29 @@
     <link rel="icon" href="images/favicon.png" type="image/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ersi Zhao VFX/ML</title>
+  <title>Ersi Zhao — VFX &amp; Real-Time Supervisor</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Ersi (Ethan) Zhao — Head of Real-Time at Ingenuity Studios. Unreal Engine virtual production, Nuke compositing pipelines, and ML workflows for film, TV, and music video. Credits include Taylor Swift's Eras Tour, Billie Eilish, BTS, and Hellraiser." />
+  <meta name="author" content="Ersi Zhao" />
+  <link rel="canonical" href="https://ersistant.com/" />
+
+  <!-- Open Graph (LinkedIn, Facebook, Discord) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ersi Zhao" />
+  <meta property="og:url" content="https://ersistant.com/" />
+  <meta property="og:title" content="Ersi Zhao — VFX &amp; Real-Time Supervisor" />
+  <meta property="og:description" content="Unreal Engine virtual production, Nuke compositing pipelines, and ML workflows for film, TV, and music video. Credits include Taylor Swift's Eras Tour, Billie Eilish, BTS, and Hellraiser." />
+  <meta property="og:image" content="https://ersistant.com/images/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="VFX showreel still from Ersi Zhao's portfolio" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ersi Zhao — VFX &amp; Real-Time Supervisor" />
+  <meta name="twitter:description" content="Unreal Engine virtual production, Nuke compositing pipelines, and ML workflows for film, TV, and music video." />
+  <meta name="twitter:image" content="https://ersistant.com/images/og-image.jpg" />
 
   <!-- Menu (shared) -->
   <link rel="stylesheet" href="menu.css">
@@ -34,6 +56,13 @@
       font-family: Arial, sans-serif;
       background-color: #111;
       color: #fff;
+
+      /* menu.css gives every page a fixed, cover-sized photo background. On this
+         page it is completely hidden behind the carousel and the gallery, but it
+         still downloads and — because it is background-attachment: fixed — forces
+         a full-viewport repaint on every scroll frame, which is what makes
+         scrolling stutter on desktop. Cancel it here only; other pages keep it. */
+      background-image: none;
     }
 
     .gallery {
@@ -108,8 +137,9 @@
       }
     }
 
-    /* prevent scrolling while menu is visible */
-    html.menu-open, body.menu-open { overflow: hidden; }
+    /* prevent scrolling while menu or reel modal is visible */
+    html.menu-open, body.menu-open,
+    html.modal-open, body.modal-open { overflow: hidden; }
 
 
     /*!* =========================*/
@@ -157,90 +187,6 @@
 
 
 
-
-/* =========================
-Floating Banner start
-========================= */
-
-.float-banner {
-  position: fixed;
-  top: calc(env(safe-area-inset-top) + 16px);
-  left: 50%;
-  transform: translate(-50%, -10px);
-  width: min(900px, calc(100vw - 24px));
-  z-index: 9999;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.float-banner.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-  pointer-events: auto;
-}
-
-.float-banner__inner {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 12px;
-  align-items: center;
-
-  padding: 12px 16px;
-  border-radius: 14px;
-
-  background: rgba(20,20,20,0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
-}
-
-.float-banner__text {
-  font-size: 14px;
-  color: rgba(255,255,255,0.9);
-}
-
-.float-banner__link {
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: rgba(199,158,53,0.25);
-  border: 1px solid rgba(199,158,53,0.35);
-  color: #fff;
-  font-size: 14px;
-}
-
-.float-banner__close {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.05);
-  color: white;
-  cursor: pointer;
-}
-
-/* Mobile stacking */
-@media (max-width: 600px) {
-  .float-banner__inner {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "text close"
-      "link close";
-  }
-
-  .float-banner__text { grid-area: text; }
-  .float-banner__link { grid-area: link; }
-  .float-banner__close { grid-area: close; }
-}
-
-
-/* =========================
-Floating Banner end
-========================= */
 
    /* ── Carousel ── */
   /* ── Carousel ── */
@@ -307,11 +253,14 @@ Floating Banner end
 
 
 
-  .slide-1 { background: url('images/landing_hero.jpg') center/cover no-repeat; cursor: pointer; }
-  .slide-2 { background: #000; }
-  .slide-3 { background: url('images/7_clouds.png') center/cover no-repeat; }
-  .slide-4 { background: url('images/4_spotify_v03.png') center/cover no-repeat; }
+  /* Slide order: 0 Eras Tour · 1 Reel · 2 NF Clouds · 3 Spotify */
 
+  /* Poster sits under the iframe so first paint is instant and we never
+     show YouTube's own play button while the player is still spinning up. */
+  .slide-era     { background: #000 url('images/era_tour_poster.jpg') center/cover no-repeat; }
+  .slide-reel    { background: url('images/landing_hero.jpg') center/cover no-repeat; cursor: pointer; }
+  .slide-clouds  { background: url('images/7_clouds.png') center/cover no-repeat; }
+  .slide-spotify { background: url('images/4_spotify_v03.png') center/cover no-repeat; }
 
   .slide-video {
     position: absolute;
@@ -322,6 +271,41 @@ Floating Banner end
     height: max(100vh, 56.25vw);
     border: none;
     pointer-events: none;
+
+    /* Revealed by JS only once the player reports PLAYING, so the
+       poster covers YouTube's play overlay entirely. */
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .slide-video.playing { opacity: 1; }
+
+  /* Opaque poster sitting ON TOP of the iframe. YouTube's chrome is inside a
+     cross-origin frame we cannot style, so the only guaranteed way to keep it
+     off screen is to physically cover it with our own element until playback
+     is confirmed. Sits above the iframe, below the caption (z-index 10). */
+  .era-cover {
+    position: absolute;
+    inset: 0;
+    background: #000 url('images/era_tour_poster.jpg') center/cover no-repeat;
+    z-index: 5;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+
+  .era-cover.lifted { opacity: 0; }
+
+  /* Same bleed trick as the reel, so the Eras Tour background never flashes
+     YouTube's title/Share strip either. The slide already clips overflow. */
+  .slide-video iframe {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: calc(100% + 2 * 90px);
+    border: none;
+    display: block;
   }
 
 
@@ -348,6 +332,11 @@ Floating Banner end
   .arrow-right { right: 1rem; }
   .arrow.hidden { visibility: hidden; pointer-events: none; }
 
+  /* On phones/tablets the slides are driven by swipe instead */
+  @media (hover: none) and (pointer: coarse) {
+    .arrow { display: none; }
+  }
+
   /* ── Dots ── */
   .dots {
     position: absolute;
@@ -365,9 +354,20 @@ Floating Banner end
     border-radius: 50%;
     background: rgba(255,255,255,0.35);
     transition: background 0.3s;
+    cursor: pointer;
   }
 
   .dot.active { background: rgba(255,255,255,0.9); }
+
+  /* Keep the visual dot small but give it a finger-sized tap target */
+  @media (hover: none) and (pointer: coarse) {
+    .dots { gap: 0; }
+    .dot {
+      box-sizing: content-box;
+      padding: 14px 10px;
+      background-clip: content-box;
+    }
+  }
 
 
 
@@ -382,32 +382,156 @@ Floating Banner end
 
   #videoModal.open { display: block; }
 
-  #videoModal iframe {
+  /* YouTube draws the title, channel, Share and Watch-later strip anchored to
+     the top edge of the player for the first few seconds of playback, and no
+     embed parameter disables it. So we make the iframe taller than the 16:9
+     window by --yt-bleed top and bottom. The video letterboxes to the full
+     width either way, so those extra bands are black bars — the overlay lands
+     on the top band, and the wrapper's overflow clips it off. The picture
+     itself is never cropped. */
+  #reelVideoWrap {
+    --yt-bleed: 90px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: min(100vw, 177.78vh);
     height: min(100vh, 56.25vw);
+    overflow: hidden;
+  }
+
+  #reelVideoWrap iframe {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: calc(100% + 2 * var(--yt-bleed));
     border: none;
+    display: block;
   }
 
   #modalClose {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: none;
+    /* Safe-area inset keeps this clear of the iPhone notch / status bar */
+    top: calc(env(safe-area-inset-top, 0px) + 1rem);
+    right: calc(env(safe-area-inset-right, 0px) + 1rem);
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.35);
     border: none;
     color: white;
-    font-size: 2.8rem;
+    font-size: 2rem;
     line-height: 1;
     cursor: pointer;
-    z-index: 3001;
-    opacity: 0.7;
+    z-index: 3003;   /* above the click-catcher (3001) and scrub bar (3002) */
+    opacity: 0.75;
     transition: opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
   }
 
   #modalClose:hover { opacity: 1; }
+
+  /* ── Custom reel controls ──
+     YouTube's control bar cannot be partially hidden — controls:1 brings the
+     logo, title, share and settings with it, controls:0 removes everything.
+     So the player runs bare and we draw just the scrub bar ourselves. */
+
+  /* Keep clicks off the iframe; with controls:0 YouTube would still toggle
+     playback on click and fight our own handler. */
+  #reelVideoWrap { pointer-events: none; }
+
+  #reelClickCatch {
+    position: absolute;
+    inset: 0;
+    z-index: 3001;
+    /* No cursor of its own on purpose: cursor is inherited, so an explicit
+       value here would defeat the modal's cursor: none auto-hide. */
+  }
+
+  .reel-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3002;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px calc(env(safe-area-inset-right, 0px) + 20px)
+             calc(env(safe-area-inset-bottom, 0px) + 16px)
+             calc(env(safe-area-inset-left, 0px) + 20px);
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+    transition: opacity 0.3s ease;
+  }
+
+  /* Fades out with the cursor, returns on any move or tap */
+  .reel-bar.idle { opacity: 0; pointer-events: none; }
+
+  .reel-track {
+    position: relative;
+    flex: 1;
+    height: 34px;          /* generous hit area; the rail itself stays thin */
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  .reel-rail, .reel-fill {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .reel-rail {
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.28);
+  }
+
+  .reel-fill {
+    left: 0;
+    width: 0;
+    background: rgba(199,158,53,0.95);   /* site accent */
+  }
+
+  .reel-fill::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .reel-time {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .reel-time { font-size: 11px; }
+    .reel-bar  { gap: 10px; }
+  }
+
+  /* iPhone hands playback to Apple's fullscreen player, which brings its own
+     scrubber — so ours would be redundant. Pointer events go back to the
+     iframe there, so YouTube's own play button stays tappable if iOS ever
+     refuses our programmatic play. */
+  #videoModal.native-fs .reel-bar,
+  #videoModal.native-fs #reelClickCatch { display: none; }
+  #videoModal.native-fs #reelVideoWrap  { pointer-events: auto; }
 
 
 
@@ -446,12 +570,12 @@ Floating Banner end
     50%       { transform: translateY(6px); }
   }
 
-  /*play-icon for demo reel*/
+  /* Play icon for the demo reel — centred now that the "Reel" title is gone */
   .play-icon {
     position: absolute;
-    bottom: 17rem;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     width: 5rem;
     height: 5rem;
     opacity: 0.8;
@@ -460,9 +584,9 @@ Floating Banner end
     z-index: 10;
   }
 
-  .slide-1:hover .play-icon {
+  .slide-reel:hover .play-icon {
     opacity: 1;
-    transform: translateX(-50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1);
   }
   </style>
 
@@ -486,21 +610,6 @@ Floating Banner end
 
 
 
-  <!-- Floating Banner start-->
-<div id="float-banner" class="float-banner">
-  <div class="float-banner__inner">
-    <div class="float-banner__text">
-      <strong>New Update:</strong> added a few projects here, most of them are listed on IMDB.
-    </div>
-<!--    <a class="float-banner__link" href="#" aria-disabled="true">Learn More</a>&lt;!&ndash; we disable button &ndash;&gt;-->
-    <button class="float-banner__close" aria-label="Close"  >✕</button>
-  </div>
-</div>
-    <!-- Floating Banner end -->
-
-
-
-
 
 
 
@@ -520,40 +629,38 @@ Floating Banner end
   <div class="carousel" id="carousel">
     <div class="slides-wrapper" id="slidesWrapper">
 
+      <!-- Slide 0: Eras Tour — muted looping background video, no player UI -->
+      <div class="slide slide-era">
+          <div class="slide-video" id="eraVideoWrap">
+            <div id="eraVideo"></div>
+          </div>
+          <div class="era-cover" id="eraCover"></div>
+          <div class="slide-caption">
+            <span class="slide-title">Eras Tour</span>
+            <span class="slide-subtitle">Taylor Swift</span>
+          </div>
+        </div>
+
       <!-- Slide 1: Reel (click opens modal) -->
-       <div class="slide slide-1" id="slide1">
+       <div class="slide slide-reel" id="slideReel" role="button" tabindex="0" aria-label="Play showreel">
           <div class="play-icon">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="40" cy="40" r="38" stroke="rgba(255,255,255,0.8)" stroke-width="2" fill="rgba(0,0,0,0.25)"/>
               <polygon points="32,22 32,58 60,40" fill="white"/>
             </svg>
           </div>
-          <div class="slide-caption">
-            <span class="slide-title">Reel</span>
-            <span class="slide-subtitle">Showreel</span>
-          </div>
         </div>
 
-      <!-- Slide 2: YouTube autoplay, no controls -->
-      <div class="slide slide-2">
-          <iframe class="slide-video" id="slide2Video"
-            src=""
-            allow="autoplay; fullscreen" allowfullscreen>
-          </iframe>
-          <div class="slide-caption">
-            <span class="slide-title">Eras Tour</span>
-            <span class="slide-subtitle">Taylor swift</span>
-          </div>
-        </div>
-
-      <!-- Slide 3: NF Clouds -->
-       <div class="slide slide-3">
+      <!-- Slide 2: NF Clouds -->
+       <div class="slide slide-clouds">
           <div class="slide-caption">
             <span class="slide-title">NF Clouds</span>
             <span class="slide-subtitle"></span>
           </div>
         </div>
-      <div class="slide slide-4">
+
+      <!-- Slide 3: Spotify -->
+      <div class="slide slide-spotify">
           <div class="slide-caption">
             <span class="slide-title">Spotify </span>
             <span class="slide-subtitle">hit station</span>
@@ -599,8 +706,20 @@ Floating Banner end
 
   <!-- Video modal (Reel) -->
   <div id="videoModal">
-    <button id="modalClose">&#x2715;</button>
-    <iframe id="ytFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    <button id="modalClose" aria-label="Close video">&#x2715;</button>
+    <div id="reelVideoWrap">
+      <div id="reelVideo"></div>
+    </div>
+    <!-- Tap/click target for pause-resume, so clicks never reach the iframe -->
+    <div id="reelClickCatch"></div>
+    <!-- Our own scrub bar (hidden on iPhone, which uses the native player) -->
+    <div class="reel-bar" id="reelBar">
+      <div class="reel-track" id="reelTrack">
+        <div class="reel-rail"></div>
+        <div class="reel-fill" id="reelFill"></div>
+      </div>
+      <span class="reel-time" id="reelTime">0:00 / 0:00</span>
+    </div>
   </div>
 
 
@@ -802,53 +921,41 @@ Floating Banner end
 
 
 
-// control banner section  -------start
-      (() => {
-      const banner = document.getElementById("float-banner");
-      const closeBtn = banner.querySelector(".float-banner__close");
-
-      window.addEventListener("load", () => {
-        setTimeout(() => {
-          banner.classList.add("show");
-        }, 600);
-      });
-
-      function closeBanner() {
-        banner.classList.remove("show");
-      }
-
-      closeBtn.addEventListener("click", closeBanner);
-    })();
-// control banner section  ----------end
-
-
-
-
 
 
 
 
  // ---------- Carousel + Reel modal ----------
+  // Both videos run through the YouTube IFrame Player API rather than a plain
+  // <iframe src>. Two reasons, both iOS:
+  //   1. playsinline stops Safari handing playback off to the YouTube app.
+  //   2. A pre-built player lets us call playVideo() inside the tap handler,
+  //      so the gesture still counts and iOS doesn't demand a second tap.
   (() => {
+    const carousel   = document.getElementById('carousel');
     const wrapper    = document.getElementById('slidesWrapper');
     const btnLeft    = document.getElementById('arrowLeft');
     const btnRight   = document.getElementById('arrowRight');
     const dotsEl     = document.getElementById('dots');
-    const slide1     = document.getElementById('slide1');
-    const slide2Vid  = document.getElementById('slide2Video');
+    const slideReel  = document.getElementById('slideReel');
+    const eraWrap    = document.getElementById('eraVideoWrap');
+    const eraCover   = document.getElementById('eraCover');
     const modal      = document.getElementById('videoModal');
     const modalClose = document.getElementById('modalClose');
-    const ytFrame    = document.getElementById('ytFrame');
 
-    const REEL_SRC   = 'https://www.youtube.com/embed/KzvXRyeoXCU?autoplay=1&controls=1&vq=hd2160';
-    const SLIDE2_SRC = 'https://www.youtube.com/embed/Wb7lNjQLUk8?autoplay=1&mute=1&controls=0&loop=1&playlist=Wb7lNjQLUk8&rel=0&playsinline=1';
-    const TOTAL      = 4;
-    let current      = 0;
+    const ERA_ID  = 'Wb7lNjQLUk8';
+    const REEL_ID = 'KzvXRyeoXCU';
+    const TOTAL   = 4;
 
+    let current = 0;
+    let eraPlayer = null;
+    let reelPlayer = null;
 
+    // ---------- Slide navigation ----------
     for (let i = 0; i < TOTAL; i++) {
       const d = document.createElement('div');
       d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
       dotsEl.appendChild(d);
     }
 
@@ -861,7 +968,12 @@ Floating Banner end
       document.querySelectorAll('.dot').forEach((d, i) =>
         d.classList.toggle('active', i === current)
       );
-      slide2Vid.src = (current === 1) ? SLIDE2_SRC : '';
+
+      // Deliberately NOT pausing the background video when you swipe away.
+      // A paused YouTube player draws its centre play button, so pausing on
+      // leave means that button is sitting there waiting the moment you swipe
+      // back. It is muted and loops, so letting it run is both simpler and the
+      // only way to guarantee the slide is never re-entered showing chrome.
     }
 
     btnLeft.addEventListener('click',  () => goTo(current - 1));
@@ -870,24 +982,172 @@ Floating Banner end
     document.addEventListener('keydown', (e) => {
       if (modal.classList.contains('open')) {
         if (e.key === 'Escape') closeModal();
+        if (e.key === ' ' && reelPlayer) {
+          e.preventDefault();
+          try {
+            const st = reelPlayer.getPlayerState();
+            if (st === YT.PlayerState.PLAYING) reelPlayer.pauseVideo();
+            else reelPlayer.playVideo();
+          } catch (_) { /* player not ready */ }
+          resetCursorTimer();
+        }
         return;
       }
       if (e.key === 'ArrowLeft')  goTo(current - 1);
       if (e.key === 'ArrowRight') goTo(current + 1);
     });
 
+    // ---------- Touch swipe (mobile) ----------
+    // Horizontal drags change slide; vertical drags fall through so the page
+    // still scrolls down into the gallery.
+    const SWIPE_MIN = 45;
+    let touchX = 0, touchY = 0, tracking = false, swiped = false;
+
+    carousel.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+      tracking = true;
+      swiped = false;
+    }, { passive: true });
+
+    carousel.addEventListener('touchend', (e) => {
+      if (!tracking) return;
+      tracking = false;
+
+      const dx = e.changedTouches[0].clientX - touchX;
+      const dy = e.changedTouches[0].clientY - touchY;
+
+      // Ignore taps and anything more vertical than horizontal
+      if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy)) return;
+
+      // Suppress the click this swipe would otherwise fire on the reel slide
+      swiped = true;
+      setTimeout(() => { swiped = false; }, 400);
+
+      goTo(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    // ---------- Reel modal ----------
+    // iPhone gets Apple's native fullscreen player (one scrubber, nothing else).
+    // Everywhere else the player runs bare and we draw the scrub bar ourselves,
+    // because YouTube's control bar cannot be partially suppressed.
+    const IS_IPHONE = /iPhone|iPod/.test(navigator.userAgent);
+
+    const reelBar   = document.getElementById('reelBar');
+    const reelTrack = document.getElementById('reelTrack');
+    const reelFill  = document.getElementById('reelFill');
+    const reelTime  = document.getElementById('reelTime');
+    const reelCatch = document.getElementById('reelClickCatch');
+
+    if (IS_IPHONE) modal.classList.add('native-fs');
+
     let cursorTimer;
+    const BAR_HIDE_MS = 1000;   // bar and cursor fade this long after any input
 
     function resetCursorTimer() {
       modal.style.cursor = '';
+      reelBar.classList.remove('idle');
       clearTimeout(cursorTimer);
-      cursorTimer = setTimeout(() => { modal.style.cursor = 'none'; }, 3000);
+      cursorTimer = setTimeout(() => {
+        modal.style.cursor = 'none';
+        reelBar.classList.add('idle');
+      }, BAR_HIDE_MS);
     }
 
-    slide1.addEventListener('click', () => {
-      ytFrame.src = REEL_SRC;
-      modal.classList.add('open');
+    // ---------- Custom scrub bar ----------
+    function fmt(s) {
+      s = Math.max(0, Math.floor(s || 0));
+      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    function paint(t, d) {
+      reelFill.style.width = d ? `${(t / d) * 100}%` : '0';
+      reelTime.textContent = `${fmt(t)} / ${fmt(d)}`;
+    }
+
+    let reelTick = null;
+    let scrubbing = false;
+
+    function startReelTick() {
+      if (reelTick || IS_IPHONE) return;
+      reelTick = setInterval(() => {
+        if (!reelPlayer || scrubbing) return;
+        let t = 0, d = 0;
+        try {
+          t = reelPlayer.getCurrentTime() || 0;
+          d = reelPlayer.getDuration() || 0;
+        } catch (_) { return; }
+        if (d <= 0) return;
+
+        // Stop just shy of the end so YouTube never paints its end screen
+        // (replay button plus suggested videos) over the last frame.
+        if (t >= d - 0.4) {
+          reelPlayer.pauseVideo();
+          reelPlayer.seekTo(0, true);
+          paint(0, d);
+          return;
+        }
+        paint(t, d);
+      }, 200);
+    }
+
+    function stopReelTick() {
+      clearInterval(reelTick);
+      reelTick = null;
+    }
+
+    function seekFromPointer(e) {
+      if (!reelPlayer) return;
+      const r = reelTrack.getBoundingClientRect();
+      const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      let d = 0;
+      try { d = reelPlayer.getDuration() || 0; } catch (_) { return; }
+      if (!d) return;
+      reelPlayer.seekTo(frac * d, true);
+      paint(frac * d, d);
+    }
+
+    reelTrack.addEventListener('pointerdown', (e) => {
+      scrubbing = true;
+      if (reelTrack.setPointerCapture) reelTrack.setPointerCapture(e.pointerId);
+      seekFromPointer(e);
       resetCursorTimer();
+    });
+    reelTrack.addEventListener('pointermove', (e) => { if (scrubbing) seekFromPointer(e); });
+    reelTrack.addEventListener('pointerup',     () => { scrubbing = false; });
+    reelTrack.addEventListener('pointercancel', () => { scrubbing = false; });
+
+    // Click/tap the picture to pause or resume
+    reelCatch.addEventListener('click', () => {
+      if (!reelPlayer) return;
+      try {
+        const st = reelPlayer.getPlayerState();
+        if (st === YT.PlayerState.PLAYING) reelPlayer.pauseVideo();
+        else reelPlayer.playVideo();
+      } catch (_) { /* player not ready */ }
+      resetCursorTimer();
+    });
+
+    modal.addEventListener('touchstart', () => {
+      if (modal.classList.contains('open')) resetCursorTimer();
+    }, { passive: true });
+
+    function openReel() {
+      if (swiped) return;
+      modal.classList.add('open');
+      document.documentElement.classList.add('modal-open');
+      document.body.classList.add('modal-open');
+      // playVideo() fires synchronously inside the tap handler so the user
+      // gesture still counts — that is what avoids a second tap on iOS.
+      if (reelPlayer) reelPlayer.playVideo();
+      startReelTick();
+      resetCursorTimer();
+    }
+
+    slideReel.addEventListener('click', openReel);
+    slideReel.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openReel(); }
     });
 
     modal.addEventListener('mousemove', () => {
@@ -895,26 +1155,140 @@ Floating Banner end
     });
 
     function closeModal() {
-      ytFrame.src = '';
+      stopReelTick();
+      scrubbing = false;
+      if (reelPlayer) {
+        reelPlayer.pauseVideo();
+        reelPlayer.seekTo(0, true);
+      }
+      paint(0, 0);
       modal.classList.remove('open');
+      document.documentElement.classList.remove('modal-open');
+      document.body.classList.remove('modal-open');
       modal.style.cursor = '';
       clearTimeout(cursorTimer);
     }
 
     modalClose.addEventListener('click', closeModal);
 
+    // ---------- YouTube IFrame API ----------
 
-    // Scroll arrow hint
-      // Scroll hint — visible at top, hides when scrolled down, returns when back
-      const scrollHint = document.getElementById('scrollHint');
-      setTimeout(() => scrollHint.classList.add('visible'), 800);
-      window.addEventListener('scroll', () => {
-        if (window.scrollY < 50) {
-          scrollHint.classList.add('visible');
-        } else {
-          scrollHint.classList.remove('visible');
+    // YouTube reports PLAYING the instant playback starts, but keeps animating
+    // its own play-button overlay away for a few hundred ms afterwards. Revealing
+    // on that event alone therefore still flashes the button. Gate the reveal on
+    // the playback clock actually having advanced instead — by then the overlay
+    // is genuinely gone. If playback never advances (autoplay blocked, Low Power
+    // Mode), we simply stay on the poster, which is the better fallback anyway.
+    // Seconds of genuinely-advanced playback before we lift the poster.
+    // YouTube's centre play-button overlay outlives its own PLAYING event, and
+    // measured against the real player it is still fading at 0.8s — so this is
+    // deliberately generous. The cover is an opaque still of the same shot, so
+    // holding it longer costs nothing visually; lifting it early shows chrome.
+    const REVEAL_AFTER = 2.0;
+    let revealPoll = null;
+    let eraRevealed = false;
+
+    function revealEra() {
+      eraRevealed = true;
+      eraWrap.classList.add('playing');
+      eraCover.classList.add('lifted');
+    }
+
+    // Loop pre-emptively. Letting the video actually reach its end means YouTube
+    // paints its end screen — replay button and suggested videos — for a beat
+    // before our seek lands, which shows a play button on every single loop.
+    // Jumping back slightly early means the ENDED state is never entered.
+    const LOOP_BACK_BEFORE = 0.6;   // seconds before the end
+    let loopWatch = null;
+
+    function watchEraLoop(player) {
+      if (loopWatch) return;
+      loopWatch = setInterval(() => {
+        let d = 0, t = 0;
+        try {
+          d = player.getDuration() || 0;
+          t = player.getCurrentTime() || 0;
+        } catch (_) { return; }
+        if (d > 1 && t >= d - LOOP_BACK_BEFORE) player.seekTo(0, true);
+      }, 250);
+    }
+
+    function revealEraWhenRunning(player) {
+      if (revealPoll || eraRevealed) return;
+      let waited = 0;
+      revealPoll = setInterval(() => {
+        let t = 0;
+        try { t = player.getCurrentTime() || 0; } catch (_) { /* not ready yet */ }
+        waited += 100;
+        if (t >= REVEAL_AFTER) {
+          clearInterval(revealPoll);
+          revealPoll = null;
+          revealEra();
+        } else if (waited > 15000) {
+          clearInterval(revealPoll);
+          revealPoll = null;   // give up quietly; poster stays
+        }
+      }, 100);
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      eraPlayer = new YT.Player('eraVideo', {
+        videoId: ERA_ID,
+        playerVars: {
+          // No loop/playlist here on purpose. loop:1 needs a playlist param for a
+          // single video, and playlist mode makes YouTube draw prev/next buttons
+          // around the centre play button even with controls:0. We loop by hand
+          // on ENDED instead, which keeps the player out of playlist mode.
+          autoplay: 1, mute: 1, controls: 0,
+          rel: 0, playsinline: 1, modestbranding: 1,
+          disablekb: 1, fs: 0, iv_load_policy: 3
+        },
+        events: {
+          onReady: (e) => { e.target.mute(); e.target.playVideo(); },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              revealEraWhenRunning(e.target);
+              watchEraLoop(e.target);
+            }
+            // Backstop only — watchEraLoop should prevent ever reaching this.
+            if (e.data === YT.PlayerState.ENDED) {
+              // Manual loop — seek back rather than letting the player idle on
+              // its end screen, which would show chrome again.
+              e.target.seekTo(0, true);
+              e.target.playVideo();
+            }
+          }
         }
       });
+
+      reelPlayer = new YT.Player('reelVideo', {
+        videoId: REEL_ID,
+        playerVars: Object.assign({
+          autoplay: 0, controls: 0, rel: 0,
+          modestbranding: 1, iv_load_policy: 3
+        // Leaving playsinline off on iPhone is what makes iOS take playback
+        // into its own fullscreen player. Everywhere else we want it inline.
+        }, IS_IPHONE ? {} : { playsinline: 1 }),
+        events: {
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) startReelTick();
+            if (e.data === YT.PlayerState.PAUSED)  stopReelTick();
+          }
+        }
+      });
+    };
+
+    const api = document.createElement('script');
+    api.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(api);
+
+    // ---------- Scroll hint ----------
+    // Visible at top, hides when scrolled down, returns when back
+    const scrollHint = document.getElementById('scrollHint');
+    setTimeout(() => scrollHint.classList.add('visible'), 800);
+    window.addEventListener('scroll', () => {
+      scrollHint.classList.toggle('visible', window.scrollY < 50);
+    });
 
   })();
   </script>
