@@ -3,6 +3,8 @@
 videos/*
 !videos/intro.mp4
 !videos/mocap_01.mp4
+# Web-encoded hero loop — small on purpose, and the homepage needs it
+!videos/era_hero.mp4
 
 # Local tooling / editor state
 .venv/

@@ -226,6 +226,11 @@
       z-index: 10;
     }
 
+    /* Touch layout also carries the swipe cue, so lift the title clear of it */
+    @media (hover: none) and (pointer: coarse) {
+      .slide-caption { bottom: 7.2rem; }
+    }
+
 
 
 
@@ -255,56 +260,27 @@
 
   /* Slide order: 0 Eras Tour · 1 Reel · 2 NF Clouds · 3 Spotify */
 
-  /* Poster sits under the iframe so first paint is instant and we never
-     show YouTube's own play button while the player is still spinning up. */
-  .slide-era     { background: #000 url('images/era_tour_poster.jpg') center/cover no-repeat; }
+  /* Poster matches the hero video's own first frame, so the handoff is invisible */
+  .slide-era     { background: #000 url('images/era_hero_poster.jpg') center/cover no-repeat; }
   .slide-reel    { background: url('images/landing_hero.jpg') center/cover no-repeat; cursor: pointer; }
   .slide-clouds  { background: url('images/7_clouds.png') center/cover no-repeat; }
   .slide-spotify { background: url('images/4_spotify_v03.png') center/cover no-repeat; }
 
+  /* Self-hosted silent loop. A native <video> has no player chrome at all, so
+     there is nothing to hide and no player bootstrap to wait through — which is
+     what the poster-hold and reveal-timing code existed to work around.
+     object-fit lets us size to the slide directly instead of the 16:9 overscan
+     the YouTube iframe needed. */
   .slide-video {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: max(100vw, 177.78vh);
-    height: max(100vh, 56.25vw);
-    border: none;
-    pointer-events: none;
-
-    /* Revealed by JS only once the player reports PLAYING, so the
-       poster covers YouTube's play overlay entirely. */
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-
-  .slide-video.playing { opacity: 1; }
-
-  /* Opaque poster sitting ON TOP of the iframe. YouTube's chrome is inside a
-     cross-origin frame we cannot style, so the only guaranteed way to keep it
-     off screen is to physically cover it with our own element until playback
-     is confirmed. Sits above the iframe, below the caption (z-index 10). */
-  .era-cover {
-    position: absolute;
-    inset: 0;
-    background: #000 url('images/era_tour_poster.jpg') center/cover no-repeat;
-    z-index: 5;
-    pointer-events: none;
-    transition: opacity 0.6s ease;
-  }
-
-  .era-cover.lifted { opacity: 0; }
-
-  /* Same bleed trick as the reel, so the Eras Tour background never flashes
-     YouTube's title/Share strip either. The slide already clips overflow. */
-  .slide-video iframe {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
     width: 100%;
-    height: calc(100% + 2 * 90px);
+    height: 100%;
+    object-fit: cover;
     border: none;
+    pointer-events: none;
     display: block;
   }
 
@@ -337,36 +313,79 @@
     .arrow { display: none; }
   }
 
-  /* ── Dots ── */
+  /* ── Slide indicator (horizontal position) ──
+     Segments rather than circles: a row of bars along a track reads as
+     "position in a sequence", which is what horizontal paging is. The active
+     one widens and takes the site's gold accent. */
   .dots {
     position: absolute;
-    bottom: 3.8rem;
+    bottom: 3.2rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 0.6rem;
+    align-items: center;
+    gap: 0.5rem;
     z-index: 500;
   }
 
   .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.35);
-    transition: background 0.3s;
+    width: 26px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.3);
     cursor: pointer;
+    transition: width 0.35s ease, background 0.35s ease;
   }
 
-  .dot.active { background: rgba(255,255,255,0.9); }
+  .dot.active {
+    width: 52px;
+    background: rgba(199,158,53,0.95);
+  }
 
-  /* Keep the visual dot small but give it a finger-sized tap target */
+  /* Finger-sized hit area without changing the visible bar */
   @media (hover: none) and (pointer: coarse) {
     .dots { gap: 0; }
     .dot {
       box-sizing: content-box;
-      padding: 14px 10px;
+      padding: 16px 6px;
       background-clip: content-box;
     }
+  }
+
+  /* ── Horizontal cue ──
+     Only shown where the arrows are hidden, i.e. touch devices. */
+  .swipe-hint {
+    position: absolute;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center;
+    gap: 0.55rem;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    z-index: 500;
+    pointer-events: none;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .swipe-hint { display: flex; }
+  }
+
+  .swipe-hint .nudge-l { animation: nudgeLeft  1.9s ease-in-out infinite; }
+  .swipe-hint .nudge-r { animation: nudgeRight 1.9s ease-in-out infinite; }
+
+  @keyframes nudgeLeft {
+    0%, 100% { transform: translateX(0);    opacity: 0.5; }
+    50%      { transform: translateX(-4px); opacity: 1; }
+  }
+
+  @keyframes nudgeRight {
+    0%, 100% { transform: translateX(0);   opacity: 0.5; }
+    50%      { transform: translateX(4px); opacity: 1; }
   }
 
 
@@ -535,34 +554,38 @@
 
 
 
-   /* ── Scroll hint ── */
+   /* ── Vertical cue ──
+      The gallery below the hero was previously undiscoverable: the old hint was
+      a 0.5rem empty label at 60% opacity. Now it carries a real caption and
+      enough contrast to be read against any slide. */
   .scroll-hint {
     position: absolute;
-    bottom: 2rem;
+    bottom: 1.1rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
-    z-index: 200;
+    gap: 0.3rem;
+    z-index: 500;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.3s ease;
     pointer-events: none;
+    color: rgba(255,255,255,0.85);
   }
 
   .scroll-hint.visible { opacity: 1; }
 
   .scroll-hint span {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.5rem;
-    letter-spacing: 0.2em;
+    font-size: 0.64rem;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     font-family: Arial, sans-serif;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.85);
   }
 
   .scroll-hint svg {
-    animation: scrollBounce 1.4s ease-in-out infinite;
+    animation: scrollBounce 1.5s ease-in-out infinite;
   }
 
   @keyframes scrollBounce {
@@ -629,12 +652,13 @@
   <div class="carousel" id="carousel">
     <div class="slides-wrapper" id="slidesWrapper">
 
-      <!-- Slide 0: Eras Tour — muted looping background video, no player UI -->
+      <!-- Slide 0: Eras Tour — self-hosted silent loop, no player chrome at all -->
       <div class="slide slide-era">
-          <div class="slide-video" id="eraVideoWrap">
-            <div id="eraVideo"></div>
-          </div>
-          <div class="era-cover" id="eraCover"></div>
+          <video class="slide-video" id="eraVideo"
+                 src="videos/era_hero.mp4"
+                 poster="images/era_hero_poster.jpg"
+                 autoplay muted loop playsinline preload="auto"
+                 disablepictureinpicture aria-hidden="true"></video>
           <div class="slide-caption">
             <span class="slide-title">Eras Tour</span>
             <span class="slide-subtitle">Taylor Swift</span>
@@ -687,18 +711,32 @@
       </button>
 
 
+    <!-- Horizontal cue: touch only, since desktop keeps the arrows -->
+    <div class="swipe-hint">
+      <svg class="nudge-l" width="17" height="17" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 6 9 12 15 18"></polyline>
+      </svg>
+      <span>Swipe</span>
+      <svg class="nudge-r" width="17" height="17" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 6 15 12 9 18"></polyline>
+      </svg>
+    </div>
+
+    <!-- Horizontal position indicator -->
     <div class="dots" id="dots"></div>
 
-<!-- scroll arrow hint size-->
+    <!-- Vertical cue -->
        <div class="scroll-hint" id="scrollHint">
-        <span></span>
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-             stroke="rgba(255,255,255,0.6)" stroke-width="2"
+        <span>Scroll for projects</span>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
-
-
       </div>
   </div>
 
@@ -938,17 +976,13 @@
     const btnRight   = document.getElementById('arrowRight');
     const dotsEl     = document.getElementById('dots');
     const slideReel  = document.getElementById('slideReel');
-    const eraWrap    = document.getElementById('eraVideoWrap');
-    const eraCover   = document.getElementById('eraCover');
     const modal      = document.getElementById('videoModal');
     const modalClose = document.getElementById('modalClose');
 
-    const ERA_ID  = 'Wb7lNjQLUk8';
     const REEL_ID = 'KzvXRyeoXCU';
     const TOTAL   = 4;
 
     let current = 0;
-    let eraPlayer = null;
     let reelPlayer = null;
 
     // ---------- Slide navigation ----------
@@ -1171,96 +1205,27 @@
 
     modalClose.addEventListener('click', closeModal);
 
-    // ---------- YouTube IFrame API ----------
+    // ---------- Background hero video ----------
+    // Self-hosted, so there is no reveal timing, no chrome suppression and no
+    // manual looping to manage — the element's own autoplay/loop/poster handle
+    // it. Safari on iOS occasionally declines autoplay on a freshly-inserted
+    // element even when muted; retry once on first interaction, and if it never
+    // plays the poster frame simply stays, which looks intentional.
+    const eraVideo = document.getElementById('eraVideo');
 
-    // YouTube reports PLAYING the instant playback starts, but keeps animating
-    // its own play-button overlay away for a few hundred ms afterwards. Revealing
-    // on that event alone therefore still flashes the button. Gate the reveal on
-    // the playback clock actually having advanced instead — by then the overlay
-    // is genuinely gone. If playback never advances (autoplay blocked, Low Power
-    // Mode), we simply stay on the poster, which is the better fallback anyway.
-    // Seconds of genuinely-advanced playback before we lift the poster.
-    // YouTube's centre play-button overlay outlives its own PLAYING event, and
-    // measured against the real player it is still fading at 0.8s — so this is
-    // deliberately generous. The cover is an opaque still of the same shot, so
-    // holding it longer costs nothing visually; lifting it early shows chrome.
-    const REVEAL_AFTER = 2.0;
-    let revealPoll = null;
-    let eraRevealed = false;
-
-    function revealEra() {
-      eraRevealed = true;
-      eraWrap.classList.add('playing');
-      eraCover.classList.add('lifted');
+    function nudgeEraVideo() {
+      if (eraVideo && eraVideo.paused) {
+        const p = eraVideo.play();
+        if (p && p.catch) p.catch(() => { /* poster stays; acceptable */ });
+      }
     }
 
-    // Loop pre-emptively. Letting the video actually reach its end means YouTube
-    // paints its end screen — replay button and suggested videos — for a beat
-    // before our seek lands, which shows a play button on every single loop.
-    // Jumping back slightly early means the ENDED state is never entered.
-    const LOOP_BACK_BEFORE = 0.6;   // seconds before the end
-    let loopWatch = null;
+    nudgeEraVideo();
+    document.addEventListener('touchstart', nudgeEraVideo, { once: true, passive: true });
+    document.addEventListener('click',      nudgeEraVideo, { once: true });
 
-    function watchEraLoop(player) {
-      if (loopWatch) return;
-      loopWatch = setInterval(() => {
-        let d = 0, t = 0;
-        try {
-          d = player.getDuration() || 0;
-          t = player.getCurrentTime() || 0;
-        } catch (_) { return; }
-        if (d > 1 && t >= d - LOOP_BACK_BEFORE) player.seekTo(0, true);
-      }, 250);
-    }
-
-    function revealEraWhenRunning(player) {
-      if (revealPoll || eraRevealed) return;
-      let waited = 0;
-      revealPoll = setInterval(() => {
-        let t = 0;
-        try { t = player.getCurrentTime() || 0; } catch (_) { /* not ready yet */ }
-        waited += 100;
-        if (t >= REVEAL_AFTER) {
-          clearInterval(revealPoll);
-          revealPoll = null;
-          revealEra();
-        } else if (waited > 15000) {
-          clearInterval(revealPoll);
-          revealPoll = null;   // give up quietly; poster stays
-        }
-      }, 100);
-    }
-
+    // ---------- YouTube IFrame API (reel only) ----------
     window.onYouTubeIframeAPIReady = () => {
-      eraPlayer = new YT.Player('eraVideo', {
-        videoId: ERA_ID,
-        playerVars: {
-          // No loop/playlist here on purpose. loop:1 needs a playlist param for a
-          // single video, and playlist mode makes YouTube draw prev/next buttons
-          // around the centre play button even with controls:0. We loop by hand
-          // on ENDED instead, which keeps the player out of playlist mode.
-          autoplay: 1, mute: 1, controls: 0,
-          rel: 0, playsinline: 1, modestbranding: 1,
-          disablekb: 1, fs: 0, iv_load_policy: 3
-        },
-        events: {
-          onReady: (e) => { e.target.mute(); e.target.playVideo(); },
-          onStateChange: (e) => {
-            if (e.data === YT.PlayerState.PLAYING) {
-              revealEraWhenRunning(e.target);
-              watchEraLoop(e.target);
-            }
-            // Backstop only — watchEraLoop should prevent ever reaching this.
-            if (e.data === YT.PlayerState.ENDED) {
-              // Manual loop — seek back rather than letting the player idle on
-              // its end screen, which would show chrome again.
-              e.target.seekTo(0, true);
-              e.target.playVideo();
-            }
-          }
-        }
-      });
-
       reelPlayer = new YT.Player('reelVideo', {
         videoId: REEL_ID,
         playerVars: Object.assign({
