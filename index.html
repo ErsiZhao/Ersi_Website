@@ -49,6 +49,24 @@
       --base-visible-height: 400;
       --base-title-size: 2; /* rem */
       --base-description-size: 1; /* rem */
+
+      /* Bottom stack geometry. The horizontal-navigation group (indicator,
+         swipe cue, title) is offset from a single --nav-bottom so the three
+         move together as one unit; the vertical cue sits on its own well
+         below, so the two groups read as separate. */
+      --nav-bottom: 8rem;
+      --caption-gap: 2rem;
+      --scroll-cue-bottom: 2.8rem;
+    }
+
+    /* Touch: lift everything clear of the mobile browser bar and the home
+       indicator, and leave room for the swipe cue between title and segments. */
+    @media (hover: none) and (pointer: coarse) {
+      :root {
+        --nav-bottom: calc(env(safe-area-inset-bottom, 0px) + 9.5rem);
+        --caption-gap: 4rem;
+        --scroll-cue-bottom: calc(env(safe-area-inset-bottom, 0px) + 3.2rem);
+      }
     }
 
     body {
@@ -193,7 +211,12 @@
     .carousel {
       position: relative;
       width: 100vw;
+      /* 100vh on mobile is the viewport as if the browser toolbar were hidden,
+         so anything anchored to the bottom ends up behind Chrome's/Safari's bar
+         on first load. dvh tracks the actually-visible height and follows the
+         bar as it hides and shows. vh stays as the fallback for old browsers. */
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -203,6 +226,7 @@
   .slides-wrapper {
     display: flex;
     height: 100vh;
+    height: 100dvh;
     transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
     will-change: transform;
   }
@@ -210,25 +234,23 @@
   .slide {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
   }
 
 
+    /* The bottom stack, measured up from the safe area:
+         scroll cue  ->  indicator  ->  swipe cue (touch)  ->  title  */
     .slide-caption {
       position: absolute;
-      bottom: 5rem;
+      bottom: calc(var(--nav-bottom) + var(--caption-gap));
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
       pointer-events: none;
       z-index: 10;
-    }
-
-    /* Touch layout also carries the swipe cue, so lift the title clear of it */
-    @media (hover: none) and (pointer: coarse) {
-      .slide-caption { bottom: 7.2rem; }
     }
 
 
@@ -315,48 +337,47 @@
 
   /* ── Slide indicator (horizontal position) ──
      Segments rather than circles: a row of bars along a track reads as
-     "position in a sequence", which is what horizontal paging is. The active
-     one widens and takes the site's gold accent. */
+     "position in a sequence", which is what horizontal paging is. */
   .dots {
     position: absolute;
-    bottom: 3.2rem;
+    bottom: var(--nav-bottom);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     z-index: 500;
   }
 
+  /* All segments the same size — only colour marks the active one, so nothing
+     grows into a block. The element IS the visible bar: its box is exactly
+     34x3 and the finger-sized hit area comes from a transparent ::after.
+     Padding would risk the fill painting across the whole padded box. */
   .dot {
-    width: 26px;
+    position: relative;
+    width: 34px;
     height: 3px;
     border-radius: 2px;
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.28);
     cursor: pointer;
-    transition: width 0.35s ease, background 0.35s ease;
+    transition: background 0.35s ease;
   }
 
-  .dot.active {
-    width: 52px;
-    background: rgba(199,158,53,0.95);
-  }
+  .dot.active { background: rgba(199,158,53,0.95); }
 
-  /* Finger-sized hit area without changing the visible bar */
-  @media (hover: none) and (pointer: coarse) {
-    .dots { gap: 0; }
-    .dot {
-      box-sizing: content-box;
-      padding: 16px 6px;
-      background-clip: content-box;
-    }
+  .dot::after {
+    content: '';
+    position: absolute;
+    inset: -16px -7px;   /* invisible, just the tap target */
   }
 
   /* ── Horizontal cue ──
-     Only shown where the arrows are hidden, i.e. touch devices. */
+     Only shown where the arrows are hidden, i.e. touch devices. Sits between
+     the segments and the title, grouped with them, since all three describe
+     horizontal movement. */
   .swipe-hint {
     position: absolute;
-    bottom: 5rem;
+    bottom: calc(var(--nav-bottom) + 2rem);
     left: 50%;
     transform: translateX(-50%);
     display: none;
@@ -560,7 +581,7 @@
       enough contrast to be read against any slide. */
   .scroll-hint {
     position: absolute;
-    bottom: 1.1rem;
+    bottom: var(--scroll-cue-bottom);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
