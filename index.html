@@ -830,8 +830,14 @@
           const item = document.createElement('div');
           item.className = 'gallery-item';
 
+          // src is NOT set here. 43 full-size PNG/JPGs (2500-3800px wide, ~25 MB
+          // decoded each) loaded at once exhaust iOS Safari's memory, which shows
+          // up as "a problem occurred with this webpage" or a black screen while
+          // scrolling. The observer below loads only images near the viewport and
+          // releases them again once they are far away.
           const img = document.createElement('img');
-          img.src = project.image;
+          img.dataset.src = project.image;
+          img.decoding = 'async';
           img.alt = project.title;
           img.dataset.offset = project.offset || 0;
 
@@ -849,19 +855,19 @@
           gallery.appendChild(item);
         });
 
-        // Wait until images are decodable/paintable
-        const imgs = [...document.querySelectorAll('.gallery-item img')];
-        await Promise.all(
-          imgs.map((img) =>
-            (img.decode ? img.decode() : Promise.resolve()).catch(() => {
-              return new Promise((res) => {
-                if (img.complete) return res();
-                img.addEventListener('load', res, { once: true });
-                img.addEventListener('error', res, { once: true });
-              });
-            })
-          )
-        );
+        // Load/unload gallery images as they approach / leave the viewport
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const img = entry.target.querySelector('img');
+            if (!img) return;
+            if (entry.isIntersecting) {
+              if (!img.getAttribute('src')) img.src = img.dataset.src;
+            } else if (img.getAttribute('src')) {
+              img.removeAttribute('src');   // frees the decoded bitmap
+            }
+          });
+        }, { rootMargin: '100% 0px 100% 0px' });
+        document.querySelectorAll('.gallery-item').forEach((el) => io.observe(el));
 
 
         updateLayoutSizes();
@@ -894,6 +900,7 @@
       images.forEach((img) => {
         const item = img.closest('.gallery-item');
         const rect = item.getBoundingClientRect();
+        if (rect.bottom < -windowHeight || rect.top > windowHeight * 2) return;
         const center = rect.top + rect.height / 2 - windowHeight / 2;
         const offset = parseFloat(img.dataset.offset || 0);
         img.style.transform = `translate(-50%, calc(-50% + ${offset + center * -parallaxFactor}px))`;
